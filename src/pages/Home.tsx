@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
-import { Phone, CheckCircle } from '@phosphor-icons/react';
+import { CheckCircle } from '@phosphor-icons/react';
 import { FlowButton } from '@/components/ui/flow-button';
 import { Card, CardContent } from '@/components/ui/card';
 import InquiryForm from '@/components/common/InquiryForm';

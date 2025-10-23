@@ -1,7 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import logo from '@/assets/logo.png';
-import StaggeredMenu, { StaggeredMenuItem } from './StaggeredMenu';
+import StaggeredMenu, { type StaggeredMenuItem } from './StaggeredMenu';
 
 const Header = () => {
   const { language, t } = useLanguage();
