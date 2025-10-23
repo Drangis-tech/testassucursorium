@@ -78,5 +78,32 @@
   html {
     scroll-behavior: smooth;
   }
+
+  /* Performance optimizations */
+  canvas {
+    /* Hint to the browser to use GPU for canvas rendering */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+
+  /* Optimize animations and transitions */
+  @media (prefers-reduced-motion: no-preference) {
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  }
+
+  /* Reduce motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 

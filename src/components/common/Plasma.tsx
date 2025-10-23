@@ -9,7 +9,20 @@ interface PlasmaProps {
   scale?: number;
   opacity?: number;
   mouseInteractive?: boolean;
+  targetFPS?: number;
+  resolutionScale?: number;
 }
+
+// Detect if device is mobile or low-end
+const isMobile = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
+
+const isLowEndDevice = () => {
+  const isSlowCPU = navigator.hardwareConcurrency ? navigator.hardwareConcurrency <= 4 : false;
+  const isSlowGPU = !window.WebGL2RenderingContext;
+  return isMobile() || isSlowCPU || isSlowGPU;
+};
 
 const hexToRgb = (hex: string): [number, number, number] => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -95,28 +108,52 @@ export const Plasma: React.FC<PlasmaProps> = ({
   direction = 'forward',
   scale = 1,
   opacity = 1,
-  mouseInteractive = true
+  mouseInteractive = true,
+  targetFPS = 30,
+  resolutionScale = 1
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mousePos = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     if (!containerRef.current) {
-      console.error('Plasma: containerRef is not available');
       return;
     }
 
     try {
+      // Optimize settings based on device
+      const lowEnd = isLowEndDevice();
+      const mobile = isMobile();
+      
+      // Resolution scaling for mobile/low-end devices - balanced for quality and performance
+      let actualResolutionScale = resolutionScale;
+      if (mobile) {
+        actualResolutionScale = resolutionScale * 0.4; // 40% resolution on mobile
+      } else if (lowEnd) {
+        actualResolutionScale = resolutionScale * 0.6; // 60% on low-end
+      }
+      
+      // Ensure resolution scale maintains minimum quality
+      actualResolutionScale = Math.max(actualResolutionScale, 0.3);
+
+      // Disable mouse interaction on mobile for performance
+      const actualMouseInteractive = mobile ? false : mouseInteractive;
+
       const useCustomColor = color ? 1.0 : 0.0;
       const customColorRgb = color ? hexToRgb(color) : [1, 1, 1];
 
       const directionMultiplier = direction === 'reverse' ? -1.0 : 1.0;
 
+      // Limit DPR more aggressively
+      const maxDPR = mobile ? 1 : (lowEnd ? 1 : 1.5);
+
       const renderer = new Renderer({
         webgl: 2,
         alpha: true,
         antialias: false,
-        dpr: Math.min(window.devicePixelRatio || 1, 2)
+        depth: false,
+        stencil: false,
+        dpr: Math.min(window.devicePixelRatio || 1, maxDPR)
       });
       const gl = renderer.gl;
       
@@ -132,9 +169,10 @@ export const Plasma: React.FC<PlasmaProps> = ({
       canvas.style.position = 'absolute';
       canvas.style.top = '0';
       canvas.style.left = '0';
-      containerRef.current.appendChild(canvas);
       
-      console.log('Plasma: Canvas appended, size:', canvas.width, canvas.height);
+      if (containerRef.current) {
+        containerRef.current.appendChild(canvas);
+      }
 
       const geometry = new Triangle(gl);
 
@@ -151,14 +189,22 @@ export const Plasma: React.FC<PlasmaProps> = ({
           uScale: { value: scale },
           uOpacity: { value: opacity },
           uMouse: { value: new Float32Array([0, 0]) },
-          uMouseInteractive: { value: mouseInteractive ? 1.0 : 0.0 }
+          uMouseInteractive: { value: actualMouseInteractive ? 1.0 : 0.0 }
         }
       });
 
       const mesh = new Mesh(gl, { geometry, program });
 
+      // Throttle mouse movement updates
+      let lastMouseUpdate = 0;
+      const mouseUpdateInterval = 50; // Update mouse position max every 50ms
+
       const handleMouseMove = (e: MouseEvent) => {
-        if (!mouseInteractive) return;
+        if (!actualMouseInteractive) return;
+        const now = performance.now();
+        if (now - lastMouseUpdate < mouseUpdateInterval) return;
+        lastMouseUpdate = now;
+        
         const rect = containerRef.current!.getBoundingClientRect();
         mousePos.current.x = e.clientX - rect.left;
         mousePos.current.y = e.clientY - rect.top;
@@ -167,19 +213,18 @@ export const Plasma: React.FC<PlasmaProps> = ({
         mouseUniform[1] = mousePos.current.y;
       };
 
-      if (mouseInteractive) {
-        containerRef.current.addEventListener('mousemove', handleMouseMove);
+      if (actualMouseInteractive) {
+        containerRef.current.addEventListener('mousemove', handleMouseMove, { passive: true });
       }
 
       const setSize = () => {
         const rect = containerRef.current!.getBoundingClientRect();
-        const width = Math.max(1, Math.floor(rect.width));
-        const height = Math.max(1, Math.floor(rect.height));
+        const width = Math.max(1, Math.floor(rect.width * actualResolutionScale));
+        const height = Math.max(1, Math.floor(rect.height * actualResolutionScale));
         renderer.setSize(width, height);
         const res = program.uniforms.iResolution.value as Float32Array;
         res[0] = gl.drawingBufferWidth;
         res[1] = gl.drawingBufferHeight;
-        console.log('Plasma: Size set to', width, height, 'Drawing buffer:', gl.drawingBufferWidth, gl.drawingBufferHeight);
       };
 
       const ro = new ResizeObserver(setSize);
@@ -188,7 +233,19 @@ export const Plasma: React.FC<PlasmaProps> = ({
 
       let raf = 0;
       const t0 = performance.now();
+      let lastFrameTime = 0;
+      const frameInterval = 1000 / targetFPS;
+      
       const loop = (t: number) => {
+        raf = requestAnimationFrame(loop);
+        
+        // Throttle frame rate
+        const elapsed = t - lastFrameTime;
+        if (elapsed < frameInterval) {
+          return;
+        }
+        lastFrameTime = t - (elapsed % frameInterval);
+
         let timeValue = (t - t0) * 0.001;
 
         if (direction === 'pingpong') {
@@ -198,24 +255,27 @@ export const Plasma: React.FC<PlasmaProps> = ({
 
         (program.uniforms.iTime as any).value = timeValue;
         renderer.render({ scene: mesh });
-        raf = requestAnimationFrame(loop);
       };
       raf = requestAnimationFrame(loop);
 
       return () => {
         cancelAnimationFrame(raf);
         ro.disconnect();
-        if (mouseInteractive && containerRef.current) {
+        if (actualMouseInteractive && containerRef.current) {
           containerRef.current.removeEventListener('mousemove', handleMouseMove);
         }
         try {
-          containerRef.current?.removeChild(canvas);
-        } catch {}
+          if (containerRef.current && canvas.parentNode === containerRef.current) {
+            containerRef.current.removeChild(canvas);
+          }
+        } catch (e) {
+          console.log('Plasma cleanup error:', e);
+        }
       };
     } catch (error) {
       console.error('Plasma: Error during initialization', error);
     }
-  }, [color, speed, direction, scale, opacity, mouseInteractive]);
+  }, [color, speed, direction, scale, opacity, mouseInteractive, targetFPS, resolutionScale]);
 
   return <div ref={containerRef} className="plasma-container" />;
 };

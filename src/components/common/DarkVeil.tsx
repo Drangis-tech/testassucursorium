@@ -83,6 +83,19 @@ type Props = {
   scanlineFrequency?: number;
   warpAmount?: number;
   resolutionScale?: number;
+  targetFPS?: number;
+};
+
+// Detect if device is mobile or low-end
+const isMobile = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
+
+const isLowEndDevice = () => {
+  // Check for low-end indicators
+  const isSlowCPU = navigator.hardwareConcurrency ? navigator.hardwareConcurrency <= 4 : false;
+  const isSlowGPU = !window.WebGL2RenderingContext;
+  return isMobile() || isSlowCPU || isSlowGPU;
 };
 
 export default function DarkVeil({
@@ -92,68 +105,108 @@ export default function DarkVeil({
   speed = 0.5,
   scanlineFrequency = 0,
   warpAmount = 0,
-  resolutionScale = 1
+  resolutionScale = 1,
+  targetFPS = 60
 }: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
-    const canvas = ref.current as HTMLCanvasElement;
-    const parent = canvas.parentElement as HTMLElement;
+    const canvas = ref.current;
+    if (!canvas) return;
+    
+    const parent = canvas.parentElement;
+    if (!parent) return;
 
-    const renderer = new Renderer({
-      dpr: Math.min(window.devicePixelRatio, 2),
-      canvas
-    });
-
-    const gl = renderer.gl;
-    const geometry = new Triangle(gl);
-
-    const program = new Program(gl, {
-      vertex,
-      fragment,
-      uniforms: {
-        uTime: { value: 0 },
-        uResolution: { value: new Vec2() },
-        uHueShift: { value: hueShift },
-        uNoise: { value: noiseIntensity },
-        uScan: { value: scanlineIntensity },
-        uScanFreq: { value: scanlineFrequency },
-        uWarp: { value: warpAmount }
+    try {
+      // Optimize settings based on device
+      const lowEnd = isLowEndDevice();
+      const mobile = isMobile();
+      
+      // Resolution scaling for mobile/low-end devices - more conservative to maintain quality
+      let actualResolutionScale = resolutionScale;
+      if (mobile) {
+        actualResolutionScale = resolutionScale * 0.5; // 50% resolution on mobile
+      } else if (lowEnd) {
+        actualResolutionScale = resolutionScale * 0.7; // 70% on low-end
       }
-    });
+      
+      // Ensure resolution scale maintains minimum quality
+      actualResolutionScale = Math.max(actualResolutionScale, 0.4);
 
-    const mesh = new Mesh(gl, { geometry, program });
+      // Limit DPR more aggressively
+      const maxDPR = mobile ? 1 : (lowEnd ? 1.5 : 2);
 
-    const resize = () => {
-      const w = parent.clientWidth,
-        h = parent.clientHeight;
-      renderer.setSize(w * resolutionScale, h * resolutionScale);
-      program.uniforms.uResolution.value.set(w, h);
-    };
+      const renderer = new Renderer({
+        dpr: Math.min(window.devicePixelRatio, maxDPR),
+        canvas,
+        alpha: false,
+        antialias: false, // Disable antialiasing for performance
+        depth: false,
+        stencil: false
+      });
 
-    window.addEventListener('resize', resize);
-    resize();
+      const gl = renderer.gl;
+      const geometry = new Triangle(gl);
 
-    const start = performance.now();
-    let frame = 0;
+      const program = new Program(gl, {
+        vertex,
+        fragment,
+        uniforms: {
+          uTime: { value: 0 },
+          uResolution: { value: new Vec2() },
+          uHueShift: { value: hueShift },
+          uNoise: { value: noiseIntensity },
+          uScan: { value: scanlineIntensity },
+          uScanFreq: { value: scanlineFrequency },
+          uWarp: { value: warpAmount }
+        }
+      });
 
-    const loop = () => {
-      program.uniforms.uTime.value = ((performance.now() - start) / 1000) * speed;
-      program.uniforms.uHueShift.value = hueShift;
-      program.uniforms.uNoise.value = noiseIntensity;
-      program.uniforms.uScan.value = scanlineIntensity;
-      program.uniforms.uScanFreq.value = scanlineFrequency;
-      program.uniforms.uWarp.value = warpAmount;
-      renderer.render({ scene: mesh });
-      frame = requestAnimationFrame(loop);
-    };
+      const mesh = new Mesh(gl, { geometry, program });
 
-    loop();
+      const resize = () => {
+        const w = parent.clientWidth,
+          h = parent.clientHeight;
+        renderer.setSize(w * actualResolutionScale, h * actualResolutionScale);
+        program.uniforms.uResolution.value.set(w, h);
+      };
 
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('resize', resize);
-    };
-  }, [hueShift, noiseIntensity, scanlineIntensity, speed, scanlineFrequency, warpAmount, resolutionScale]);
+      window.addEventListener('resize', resize);
+      resize();
+
+      const start = performance.now();
+      let frame = 0;
+      let lastFrameTime = 0;
+      const frameInterval = 1000 / targetFPS;
+
+      const loop = (currentTime: number) => {
+        frame = requestAnimationFrame(loop);
+        
+        // Throttle frame rate
+        const elapsed = currentTime - lastFrameTime;
+        if (elapsed < frameInterval) {
+          return;
+        }
+        lastFrameTime = currentTime - (elapsed % frameInterval);
+
+        program.uniforms.uTime.value = ((currentTime - start) / 1000) * speed;
+        program.uniforms.uHueShift.value = hueShift;
+        program.uniforms.uNoise.value = noiseIntensity;
+        program.uniforms.uScan.value = scanlineIntensity;
+        program.uniforms.uScanFreq.value = scanlineFrequency;
+        program.uniforms.uWarp.value = warpAmount;
+        renderer.render({ scene: mesh });
+      };
+
+      loop(performance.now());
+
+      return () => {
+        cancelAnimationFrame(frame);
+        window.removeEventListener('resize', resize);
+      };
+    } catch (error) {
+      console.error('DarkVeil: Error during initialization', error);
+    }
+  }, [hueShift, noiseIntensity, scanlineIntensity, speed, scanlineFrequency, warpAmount, resolutionScale, targetFPS]);
   return <canvas ref={ref} className="darkveil-canvas" />;
 }
 

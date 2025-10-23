@@ -39,7 +39,7 @@ const Home = () => {
       {/* Hero Section */}
       <section className="relative w-full h-screen min-h-screen flex items-center justify-center">
         {/* Background */}
-        <div className="absolute inset-0 w-full h-full">
+        <div className="absolute inset-0 w-full h-full overflow-hidden">
           <DarkVeil 
             speed={1.8}
             hueShift={202}
@@ -47,7 +47,8 @@ const Home = () => {
             scanlineIntensity={0.1}
             scanlineFrequency={1}
             warpAmount={0.3}
-            resolutionScale={1}
+            resolutionScale={0.75}
+            targetFPS={30}
           />
         </div>
 
@@ -637,6 +638,8 @@ const Home = () => {
             scale={1.0}
             opacity={0.7}
             mouseInteractive={true}
+            targetFPS={24}
+            resolutionScale={0.6}
           />
         </div>
         
