@@ -1,0 +1,35 @@
+.telegram-floating-button {
+  position: fixed;
+  bottom: 20px;
+  right: 100px; /* Position to the left of WhatsApp button */
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #2AABEE 0%, #229ED9 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: none;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  text-decoration: none;
+  will-change: transform;
+}
+
+.telegram-floating-button:hover {
+  transform: scale(1.25) !important;
+  box-shadow: 0 0 15px rgba(42, 171, 238, 0.6);
+}
+
+.telegram-floating-button:active {
+  transform: scale(1.15) !important;
+}
+
+.telegram-icon {
+  width: 36px;
+  height: 36px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+

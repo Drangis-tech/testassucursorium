@@ -7,6 +7,8 @@ import Header from '@/components/common/Header';
 import Home from '@/pages/Home';
 import Services from '@/pages/Services';
 import FAQ from '@/pages/FAQ';
+import WhatsAppButton from '@/components/common/WhatsAppButton';
+import TelegramButton from '@/components/common/TelegramButton';
 import '@/styles/globals.css';
 
 const queryClient = new QueryClient({
@@ -37,6 +39,8 @@ function App() {
                 </Routes>
               </main>
               <Toaster position="top-right" richColors theme="dark" />
+              <TelegramButton />
+              <WhatsAppButton />
             </div>
           </LanguageProvider>
         </BrowserRouter>
