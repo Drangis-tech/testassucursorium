@@ -1,14 +1,15 @@
+import React from 'react';
 import {
   FileText,
   Truck,
   Package,
-  FileSignature,
-  Warehouse,
-  Scale,
+  Signature,
+  Scales,
   Tag,
-  ClipboardList,
-  type LucideIcon,
-} from 'lucide-react';
+  ClipboardText,
+} from '@phosphor-icons/react';
+import sandeliavimas from '@/assets/paslaugos/sandeliavimas.png';
+import mechanizuotas from '@/assets/paslaugos/mechanizuotas.png';
 
 export interface Service {
   id: string;
@@ -20,7 +21,8 @@ export interface Service {
     lt: string;
     en: string;
   };
-  icon: LucideIcon;
+  icon?: React.ComponentType<any>;
+  image?: string;
 }
 
 export const services: Service[] = [
@@ -34,7 +36,7 @@ export const services: Service[] = [
       lt: 'Profesionalus TIR CARNET dokumentų pildymas tarptautiniam krovinių vežimui. Užtikriname tik kybą ir atitiktį tarptautiniams reikalavimams.',
       en: 'Professional TIR CARNET document completion for international cargo transport. We ensure accuracy and compliance with international requirements.',
     },
-    icon: FileSignature,
+    icon: Signature,
   },
   {
     id: 'cmr',
@@ -82,7 +84,7 @@ export const services: Service[] = [
       lt: 'Elektroninio manifesto pildymas ir pateikimas muitinės sistemoje. Spartus ir patikimas aptarnavimas.',
       en: 'Electronic manifest completion and submission to customs system. Fast and reliable service.',
     },
-    icon: ClipboardList,
+    icon: ClipboardText,
   },
   {
     id: 'intermediary',
@@ -94,7 +96,7 @@ export const services: Service[] = [
       lt: 'Profesionalus tarpininkavimas sudėtingose prekybos operacijose. Padedame tinkamai įforminti visus muitinės dokumentus.',
       en: 'Professional intermediary services in complex trade operations. We help properly complete all customs documents.',
     },
-    icon: FileSignature,
+    icon: Signature,
   },
   {
     id: 'documents',
@@ -118,7 +120,7 @@ export const services: Service[] = [
       lt: 'Saugus ir patikimas krovinių sandėliavimas. Modernios patalpos su visais reikalingais leidimais.',
       en: 'Safe and reliable cargo warehousing. Modern facilities with all necessary permits.',
     },
-    icon: Warehouse,
+    image: sandeliavimas,
   },
   {
     id: 'parking',
@@ -142,7 +144,7 @@ export const services: Service[] = [
       lt: 'Greitas ir saugus krovinių iškrovimas bei pakrovimas, naudojant modernią įrangą.',
       en: 'Fast and safe cargo loading and unloading using modern equipment.',
     },
-    icon: Scale,
+    image: mechanizuotas,
   },
   {
     id: 'loading-manual',
@@ -178,7 +180,7 @@ export const services: Service[] = [
       lt: 'Tikslus transporto priemonių ir krovinių svėrimas sertifikuotomis svarstyklėmis.',
       en: 'Accurate vehicle and cargo weighing with certified scales.',
     },
-    icon: Scale,
+    icon: Scales,
   },
   {
     id: 'eori',
@@ -190,7 +192,7 @@ export const services: Service[] = [
       lt: 'Pagalba registruojant EORI numerį, reikalingą prekybai su ES šalimis. Pildome paraiškas ir konsultuojame.',
       en: 'Assistance in registering an EORI number required for trade with EU countries. We complete applications and provide consultations.',
     },
-    icon: ClipboardList,
+    icon: ClipboardText,
   },
   {
     id: 'evis-queue',
@@ -202,7 +204,7 @@ export const services: Service[] = [
       lt: 'Registracija išankstinėje eilėje per EVIS sistemą. Taupykite laiką ir venkite nereikalingo laukimo.',
       en: 'Advance queue registration via EVIS system. Save time and avoid unnecessary waiting.',
     },
-    icon: ClipboardList,
+    icon: ClipboardText,
   },
 ];
 

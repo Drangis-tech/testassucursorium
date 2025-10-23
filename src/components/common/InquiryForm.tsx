@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
+import { FlowButton } from '@/components/ui/flow-button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -70,7 +70,7 @@ const InquiryForm = () => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
-      className="w-full max-w-2xl mx-auto"
+      className="w-full max-w-4xl mx-auto"
       id="contact-form"
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -164,16 +164,16 @@ const InquiryForm = () => {
           )}
         </div>
 
-        <Button
-          type="submit"
-          className="w-full font-baloo text-base"
-          size="lg"
-          disabled={isSubmitting}
-        >
-          {isSubmitting
-            ? t('Siunčiama...', 'Sending...')
-            : t('Pateikti užklausą', 'Submit Inquiry')}
-        </Button>
+        <div className="flex justify-center">
+          <FlowButton
+            type="submit"
+            disabled={isSubmitting}
+            className="px-12"
+            text={isSubmitting
+              ? t('Siunčiama...', 'Sending...')
+              : t('Pateikti užklausą', 'Submit Inquiry')}
+          />
+        </div>
       </form>
     </motion.div>
   );

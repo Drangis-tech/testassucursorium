@@ -1,30 +1,34 @@
-import { Link, useLocation } from 'react-router-dom';
-import { Globe, Menu, X } from 'lucide-react';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { useLocation } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
-import { motion, AnimatePresence } from 'framer-motion';
+import logo from '@/assets/logo.png';
+import StaggeredMenu, { StaggeredMenuItem } from './StaggeredMenu';
 
 const Header = () => {
   const { language, t } = useLanguage();
   const location = useLocation();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const basePath = language === 'en' ? '/en' : '';
 
-  const navItems = [
+  const menuItems: StaggeredMenuItem[] = [
     {
-      to: basePath + '/',
       label: t('Pagrindinis', 'Home'),
+      ariaLabel: t('Eiti į pagrindinį puslapį', 'Go to home page'),
+      link: basePath + '/',
     },
     {
-      to: basePath + (language === 'en' ? '/services' : '/services'),
       label: t('Paslaugos', 'Services'),
+      ariaLabel: t('Peržiūrėti paslaugas', 'View our services'),
+      link: basePath + (language === 'en' ? '/services' : '/services'),
     },
     {
-      to: basePath + (language === 'en' ? '/faq' : '/duk'),
       label: t('DUK', 'FAQ'),
+      ariaLabel: t('Dažniausiai užduodami klausimai', 'Frequently asked questions'),
+      link: basePath + (language === 'en' ? '/faq' : '/duk'),
+    },
+    {
+      label: t('Kontaktai', 'Contacts'),
+      ariaLabel: t('Susisiekite su mumis', 'Contact us'),
+      link: basePath + (language === 'en' ? '/contacts' : '/kontaktai'),
     },
   ];
 
@@ -37,107 +41,43 @@ const Header = () => {
     }
   };
 
+  const socialItems = [
+    {
+      label: t('Kalba: LT', 'Language: EN'),
+      link: '#language',
+    },
+  ];
+
+  const handleLinkClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const link = target.closest('a');
+    
+    if (link?.getAttribute('href') === '#language') {
+      e.preventDefault();
+      toggleLanguage();
+    }
+  };
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link to={basePath + '/'} className="flex items-center space-x-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground font-baloo font-bold text-lg">
-              CC
-            </div>
-            <div className="hidden sm:block">
-              <div className="font-baloo font-bold text-lg leading-none">
-                Customs Consulting
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {t('Muitinės tarpininkas', 'Customs Broker')}
-              </div>
-            </div>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
-            {navItems.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  location.pathname === item.to
-                    ? 'text-primary'
-                    : 'text-muted-foreground'
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
-            
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleLanguage}
-              className="ml-4"
-            >
-              <Globe className="h-5 w-5" />
-              <Badge variant="secondary" className="ml-1 text-[10px]">
-                {language.toUpperCase()}
-              </Badge>
-            </Button>
-          </nav>
-
-          {/* Mobile Menu Button */}
-          <div className="flex md:hidden items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleLanguage}
-            >
-              <Globe className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </Button>
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.nav
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden border-t border-border/40 py-4"
-            >
-              <div className="flex flex-col space-y-3">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`text-sm font-medium px-4 py-2 rounded-md transition-colors ${
-                      location.pathname === item.to
-                        ? 'bg-secondary text-primary'
-                        : 'text-muted-foreground hover:bg-secondary/50'
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            </motion.nav>
-          )}
-        </AnimatePresence>
-      </div>
-    </header>
+    <div 
+      className="fixed top-0 left-0 w-full z-50"
+      onClick={handleLinkClick}
+    >
+      <StaggeredMenu
+        position="right"
+        items={menuItems}
+        socialItems={socialItems}
+        displaySocials={true}
+        displayItemNumbering={true}
+        menuButtonColor="#ffffff"
+        openMenuButtonColor="#000"
+        changeMenuColorOnOpen={true}
+        colors={['#F2CA50', '#F2CA50']}
+        logoUrl={logo}
+        accentColor="#F2CA50"
+        isFixed={false}
+      />
+    </div>
   );
 };
 

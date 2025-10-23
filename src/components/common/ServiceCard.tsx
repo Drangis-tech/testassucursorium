@@ -19,6 +19,7 @@ interface ServiceCardProps {
 
 const ServiceCard = ({ service, index }: ServiceCardProps) => {
   const { language } = useLanguage();
+  const IconComponent = service.icon;
 
   return (
     <Dialog>
@@ -33,8 +34,16 @@ const ServiceCard = ({ service, index }: ServiceCardProps) => {
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                    <service.icon className="h-5 w-5 text-primary" />
+                  <div className="p-2 rounded-lg transition-colors">
+                    {service.image ? (
+                      <img 
+                        src={service.image} 
+                        alt={service.title[language]}
+                        className="h-5 w-5 object-contain"
+                      />
+                    ) : IconComponent ? (
+                      <IconComponent className="h-5 w-5 text-primary" weight="regular" />
+                    ) : null}
                   </div>
                   <CardTitle className="text-lg font-baloo">
                     {service.title[language]}
@@ -48,8 +57,16 @@ const ServiceCard = ({ service, index }: ServiceCardProps) => {
       <DialogContent>
         <DialogHeader>
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 rounded-lg bg-primary/10">
-              <service.icon className="h-6 w-6 text-primary" />
+            <div className="p-3 rounded-lg">
+              {service.image ? (
+                <img 
+                  src={service.image} 
+                  alt={service.title[language]}
+                  className="h-6 w-6 object-contain"
+                />
+              ) : IconComponent ? (
+                <IconComponent className="h-6 w-6 text-primary" weight="regular" />
+              ) : null}
             </div>
             <DialogTitle className="font-baloo text-2xl">
               {service.title[language]}

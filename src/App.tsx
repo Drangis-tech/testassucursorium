@@ -4,7 +4,6 @@ import { ThemeProvider } from 'next-themes';
 import { Toaster } from 'sonner';
 import { LanguageProvider } from '@/hooks/useLanguage';
 import Header from '@/components/common/Header';
-import Footer from '@/components/common/Footer';
 import Home from '@/pages/Home';
 import Services from '@/pages/Services';
 import FAQ from '@/pages/FAQ';
@@ -37,7 +36,6 @@ function App() {
                   <Route path="/en/faq" element={<FAQ />} />
                 </Routes>
               </main>
-              <Footer />
               <Toaster position="top-right" richColors theme="dark" />
             </div>
           </LanguageProvider>
