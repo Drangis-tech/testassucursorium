@@ -23,22 +23,13 @@ export const stats: Stat[] = [
     value: 520000,
     prefix: '€',
     label: {
-      lt: 'Bendra garantijų suma per metus',
+      lt: 'Bendra suteiktų garantijų suma per metus',
       en: 'Total guarantee amount per year',
     },
   },
   {
-    id: 'clients',
-    value: 47,
-    suffix: '+',
-    label: {
-      lt: 'Aktyvių klientų',
-      en: 'Active clients',
-    },
-  },
-  {
     id: 'experience',
-    value: 12,
+    value: 15,
     suffix: '+',
     label: {
       lt: 'Metų patirtis',
