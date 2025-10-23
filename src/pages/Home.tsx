@@ -53,7 +53,7 @@ const Home = () => {
 
         {/* Content */}
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl">
+          <div className="w-full">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -71,7 +71,7 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-5xl md:text-[90px] font-baloo font-bold leading-tight text-left mb-16"
             >
-              Mes pasirūpinsime viskuo, kas svarbu muitinei.
+              Mes užtikriname sklandų, tikslų ir teisės aktus atitinkantį krovinių įforminimą bei atstovavimą muitinėje.
             </motion.h1>
 
             <motion.div
@@ -153,7 +153,7 @@ const Home = () => {
       </section>
 
       {/* About Us Section */}
-      <section className="relative w-full h-screen min-h-screen bg-black overflow-hidden flex items-center">
+      <section id="about" className="relative w-full h-screen min-h-screen bg-black overflow-hidden flex items-center">
         {/* Background particles effect */}
         <div className="absolute inset-0">
           <Particles
@@ -225,7 +225,7 @@ const Home = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
-                className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-white leading-tight"
+                className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-white leading-tight mb-6"
               >
                 {t('Apie mus', 'About Us')}
               </motion.h2>
@@ -236,7 +236,7 @@ const Home = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.3 }}
-                className="text-lg sm:text-xl md:text-2xl lg:text-[30px] text-gray-400 leading-relaxed max-w-xl my-auto"
+                className="text-lg sm:text-xl md:text-2xl lg:text-[30px] text-gray-400 leading-relaxed max-w-xl mb-auto"
               >
                 {t(
                   'Profesionalūs muitinės įforminimo sprendimai su aiškiu procesu ir garantuotais rezultatais.',

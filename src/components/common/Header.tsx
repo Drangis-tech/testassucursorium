@@ -16,6 +16,11 @@ const Header = () => {
       link: basePath + '/',
     },
     {
+      label: t('Apie mus', 'About Us'),
+      ariaLabel: t('Sužinoti apie mus', 'Learn about us'),
+      link: basePath + '/#about',
+    },
+    {
       label: t('Paslaugos', 'Services'),
       ariaLabel: t('Peržiūrėti paslaugas', 'View our services'),
       link: basePath + (language === 'en' ? '/services' : '/services'),
@@ -32,29 +37,46 @@ const Header = () => {
     },
   ];
 
-  const toggleLanguage = () => {
+  const switchLanguage = (targetLang: string) => {
     const currentPath = location.pathname;
-    if (language === 'lt') {
-      window.location.href = '/en' + currentPath;
+    // Remove any existing language prefix
+    const pathWithoutLang = currentPath.replace(/^\/(en|ru|pl)/, '');
+    
+    if (targetLang === 'lt') {
+      window.location.href = pathWithoutLang || '/';
     } else {
-      window.location.href = currentPath.replace('/en', '') || '/';
+      window.location.href = `/${targetLang}${pathWithoutLang}`;
     }
   };
 
   const socialItems = [
     {
-      label: t('Kalba: LT', 'Language: EN'),
-      link: '#language',
+      label: 'LT',
+      link: '#lang-lt',
+    },
+    {
+      label: 'EN',
+      link: '#lang-en',
+    },
+    {
+      label: 'RU',
+      link: '#lang-ru',
+    },
+    {
+      label: 'PL',
+      link: '#lang-pl',
     },
   ];
 
   const handleLinkClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
     const link = target.closest('a');
+    const href = link?.getAttribute('href');
     
-    if (link?.getAttribute('href') === '#language') {
+    if (href?.startsWith('#lang-')) {
       e.preventDefault();
-      toggleLanguage();
+      const targetLang = href.replace('#lang-', '');
+      switchLanguage(targetLang);
     }
   };
 
@@ -76,6 +98,7 @@ const Header = () => {
         logoUrl={logo}
         accentColor="#F2CA50"
         isFixed={false}
+        currentLanguage={language}
       />
     </div>
   );
