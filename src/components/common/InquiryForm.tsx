@@ -14,9 +14,8 @@ const formSchemaLt = z.object({
   company: z.string().optional(),
   email: z.string().email('Neteisingas el. pašto adresas'),
   phone: z.string().min(6, 'Telefono numeris būtinas'),
-  serviceType: z.string().min(1, 'Pasirinkite paslaugos tipą'),
+  serviceType: z.string().min(1, 'Paslaugos tipas būtinas'),
   message: z.string().min(10, 'Žinutė per trumpa (min. 10 simbolių)'),
-  file: z.any().optional(),
 });
 
 const formSchemaEn = z.object({
@@ -24,9 +23,8 @@ const formSchemaEn = z.object({
   company: z.string().optional(),
   email: z.string().email('Invalid email address'),
   phone: z.string().min(6, 'Phone number is required'),
-  serviceType: z.string().min(1, 'Select service type'),
+  serviceType: z.string().min(1, 'Service type is required'),
   message: z.string().min(10, 'Message too short (min. 10 characters)'),
-  file: z.any().optional(),
 });
 
 type FormData = z.infer<typeof formSchemaLt>;
@@ -46,9 +44,18 @@ const InquiryForm = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log('Form data:', data);
+      const response = await fetch('https://submit-form.com/kX5HhWm6l', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Form submission failed');
+      }
       
       toast.success(
         t(
@@ -58,6 +65,7 @@ const InquiryForm = () => {
       );
       reset();
     } catch (error) {
+      console.error('Form submission error:', error);
       toast.error(
         t('Klaida siunčiant užklausą. Bandykite dar kartą.', 'Error sending inquiry. Please try again.')
       );
@@ -76,7 +84,7 @@ const InquiryForm = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="name">{t('Vardas/Pavardė', 'Name')} *</Label>
+            <Label htmlFor="name">{t('Vardas', 'Name')} *</Label>
             <Input id="name" {...register('name')} className="mt-1.5" />
             {errors.name && (
               <p className="text-sm text-destructive mt-1">{errors.name.message}</p>
@@ -110,19 +118,13 @@ const InquiryForm = () => {
         </div>
 
         <div>
-          <Label htmlFor="serviceType">{t('Paslaugos tipas', 'Service Type')} *</Label>
-          <select
+          <Label htmlFor="serviceType">{t('Dominanti paslauga', 'Service Type')} *</Label>
+          <Input
             id="serviceType"
             {...register('serviceType')}
-            className="mt-1.5 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            <option value="">{t('Pasirinkite...', 'Select...')}</option>
-            <option value="export">{t('Eksportas', 'Export')}</option>
-            <option value="import">{t('Importas', 'Import')}</option>
-            <option value="tir">{t('TIR CARNET', 'TIR CARNET')}</option>
-            <option value="cmr">{t('CMR', 'CMR')}</option>
-            <option value="other">{t('Kita', 'Other')}</option>
-          </select>
+            className="mt-1.5"
+            placeholder={t('Įveskite paslaugos tipą...', 'Enter service type...')}
+          />
           {errors.serviceType && (
             <p className="text-sm text-destructive mt-1">{errors.serviceType.message}</p>
           )}
@@ -143,18 +145,6 @@ const InquiryForm = () => {
           {errors.message && (
             <p className="text-sm text-destructive mt-1">{errors.message.message}</p>
           )}
-        </div>
-
-        <div>
-          <Label htmlFor="file">
-            {t('Failo įkėlimas', 'File Upload')} ({t('nebūtinas', 'optional')})
-          </Label>
-          <Input
-            id="file"
-            type="file"
-            {...register('file')}
-            className="mt-1.5"
-          />
         </div>
 
         <div className="text-xs text-muted-foreground">
