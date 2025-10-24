@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import './TelegramButton.css';
-import telegramLogo from '@/assets/logo/telegram.svg';
+import './ViberButton.css';
+import viberLogo from '@/assets/logo/viber.svg';
 
-const TelegramButton = () => {
+const ViberButton = () => {
   const buttonRef = useRef<HTMLAnchorElement>(null);
   const isVisible = useRef(false);
 
@@ -49,26 +49,26 @@ const TelegramButton = () => {
   }, []);
 
   const handleClick = () => {
-    // Opens Telegram with phone number
-    const phoneNumber = '37065088892'; // Replace with your actual number (with country code, no + or spaces)
-    window.open(`https://t.me/+${phoneNumber}`, '_blank');
+    // Opens Viber chat - works on both web and mobile
+    const phoneNumber = '37065088892'; // Phone number with country code, no + or spaces
+    window.open(`https://viber.click/${phoneNumber}`, '_blank');
   };
 
   return (
     <a
       ref={buttonRef}
       onClick={handleClick}
-      className="telegram-floating-button"
-      aria-label="Chat on Telegram"
+      className="viber-floating-button"
+      aria-label="Chat on Viber"
     >
       <img
-        src={telegramLogo}
-        alt="Telegram"
-        className="telegram-icon"
+        src={viberLogo}
+        alt="Viber"
+        className="viber-icon"
       />
     </a>
   );
 };
 
-export default TelegramButton;
+export default ViberButton;
 

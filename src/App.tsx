@@ -9,6 +9,7 @@ import Services from '@/pages/Services';
 import FAQ from '@/pages/FAQ';
 import WhatsAppButton from '@/components/common/WhatsAppButton';
 import TelegramButton from '@/components/common/TelegramButton';
+import ViberButton from '@/components/common/ViberButton';
 import '@/styles/globals.css';
 
 const queryClient = new QueryClient({
@@ -39,6 +40,7 @@ function App() {
                 </Routes>
               </main>
               <Toaster position="top-right" richColors theme="dark" />
+              <ViberButton />
               <TelegramButton />
               <WhatsAppButton />
             </div>

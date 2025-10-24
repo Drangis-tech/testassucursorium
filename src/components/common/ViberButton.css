@@ -1,7 +1,7 @@
-.whatsapp-floating-button {
+.viber-floating-button {
   position: fixed;
   bottom: 20px;
-  right: 20px;
+  right: 180px; /* Position to the left of Telegram button */
   width: 60px;
   height: 60px;
   background: transparent;
@@ -18,18 +18,18 @@
   will-change: transform;
 }
 
-.whatsapp-floating-button:hover {
+.viber-floating-button:hover {
   transform: scale(1.25) !important;
-  box-shadow: 0 0 15px rgba(37, 211, 102, 0.6);
+  box-shadow: 0 0 15px rgba(115, 96, 242, 0.6);
 }
 
-.whatsapp-floating-button:active {
+.viber-floating-button:active {
   transform: scale(1.15) !important;
 }
 
-.whatsapp-icon {
-  width: 60px;
-  height: 60px;
+.viber-icon {
+  width: 70px;
+  height: 70px;
   object-fit: contain;
   pointer-events: none;
 }
