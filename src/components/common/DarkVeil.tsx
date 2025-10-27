@@ -18,6 +18,7 @@ uniform float uNoise;
 uniform float uScan;
 uniform float uScanFreq;
 uniform float uWarp;
+uniform float uMobileScale;
 #define iTime uTime
 #define iResolution uResolution
 
@@ -61,6 +62,7 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord){
     vec2 uv=fragCoord/uResolution.xy*2.-1.;
     uv.x*=uResolution.x/uResolution.y;
     uv.y*=-1.;
+    uv*=uMobileScale;
     uv+=uWarp*vec2(sin(uv.y*6.283+uTime*0.5),cos(uv.x*6.283+uTime*0.5))*0.05;
     fragColor=cppn_fn(uv,0.1*sin(0.3*uTime),0.1*sin(0.69*uTime),0.1*sin(0.44*uTime));
 }
@@ -144,6 +146,9 @@ export default function DarkVeil({
       const gl = renderer.gl;
       const geometry = new Triangle(gl);
 
+      // Mobile scale: zoom in on mobile to show the center of the pattern
+      const mobileScale = mobile ? 0.35 : 1.0;
+
       const program = new Program(gl, {
         vertex,
         fragment,
@@ -154,7 +159,8 @@ export default function DarkVeil({
           uNoise: { value: noiseIntensity },
           uScan: { value: scanlineIntensity },
           uScanFreq: { value: scanlineFrequency },
-          uWarp: { value: warpAmount }
+          uWarp: { value: warpAmount },
+          uMobileScale: { value: mobileScale }
         }
       });
 
