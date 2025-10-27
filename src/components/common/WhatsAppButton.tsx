@@ -6,31 +6,44 @@ import whatsappLogo from '@/assets/logo/whatsapp.svg';
 const WhatsAppButton = () => {
   const buttonRef = useRef<HTMLAnchorElement>(null);
   const isVisible = useRef(false);
+  const rafId = useRef<number | null>(null);
 
   useEffect(() => {
+    // Detect if mobile device
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
+    
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
+      // Use requestAnimationFrame for smooth mobile performance
+      if (rafId.current !== null) {
+        cancelAnimationFrame(rafId.current);
+      }
       
-      // Show button when scrolled down more than 200px
-      if (currentScrollY > 200 && !isVisible.current) {
-        isVisible.current = true;
-        gsap.to(buttonRef.current, {
-          y: 0,
-          opacity: 1,
-          duration: 0.5,
-          ease: 'power2.out',
-        });
-      }
-      // Hide button when scrolled back to top (less than 200px)
-      else if (currentScrollY <= 200 && isVisible.current) {
-        isVisible.current = false;
-        gsap.to(buttonRef.current, {
-          y: 100,
-          opacity: 0,
-          duration: 0.4,
-          ease: 'power2.in',
-        });
-      }
+      rafId.current = requestAnimationFrame(() => {
+        const currentScrollY = window.scrollY;
+        
+        // Show button when scrolled down more than 200px
+        if (currentScrollY > 200 && !isVisible.current) {
+          isVisible.current = true;
+          gsap.to(buttonRef.current, {
+            y: 0,
+            opacity: 1,
+            duration: isMobile ? 0.3 : 0.5,
+            ease: 'power2.out',
+            force3D: true,
+          });
+        }
+        // Hide button when scrolled back to top (less than 200px)
+        else if (currentScrollY <= 200 && isVisible.current) {
+          isVisible.current = false;
+          gsap.to(buttonRef.current, {
+            y: 100,
+            opacity: 0,
+            duration: isMobile ? 0.25 : 0.4,
+            ease: 'power2.in',
+            force3D: true,
+          });
+        }
+      });
     };
 
     // Initial state - hidden
@@ -38,6 +51,7 @@ const WhatsAppButton = () => {
       gsap.set(buttonRef.current, {
         y: 100,
         opacity: 0,
+        force3D: true,
       });
     }
 
@@ -45,6 +59,9 @@ const WhatsAppButton = () => {
     
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      if (rafId.current !== null) {
+        cancelAnimationFrame(rafId.current);
+      }
     };
   }, []);
 

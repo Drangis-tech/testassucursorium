@@ -61,7 +61,7 @@ const Home = () => {
               transition={{ duration: 0.5 }}
               className="mb-6 md:mb-12 text-left"
             >
-              <p className="text-lg md:text-2xl lg:text-[35px] text-muted-foreground">
+              <p className="text-[21px] sm:text-2xl md:text-[30px] lg:text-4xl xl:text-[45px] text-muted-foreground">
                 Customs Consulting
               </p>
             </motion.div>
@@ -70,7 +70,7 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-5xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[90px] font-baloo font-bold leading-tight text-left mb-8 md:mb-12 lg:mb-16"
+              className="text-[42px] sm:text-5xl md:text-6xl lg:text-7xl xl:text-[90px] font-baloo font-bold leading-tight text-left mb-8 md:mb-12 lg:mb-16"
             >
               Mes užtikriname sklandų, tikslų ir teisės aktus atitinkantį krovinių įforminimą bei atstovavimą muitinėje.
             </motion.h1>
@@ -79,6 +79,7 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-center md:text-left"
             >
               <FlowButton
                 href="#contact-form"
@@ -154,7 +155,7 @@ const Home = () => {
       </section>
 
       {/* About Us Section */}
-      <section id="about" className="relative w-full h-screen min-h-screen bg-black overflow-hidden flex items-center">
+      <section id="about" className="relative w-full min-h-screen bg-black overflow-hidden py-12 lg:py-24 lg:flex lg:items-center">
         {/* Background particles effect */}
         <div className="absolute inset-0">
           <Particles
@@ -179,18 +180,51 @@ const Home = () => {
         {/* Gradient overlay for depth */}
         <div className="absolute inset-0 bg-gradient-to-b from-black via-black/95 to-black pointer-events-none" />
 
-        <div className="container mx-auto px-4 relative z-10 py-12">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-center h-full">
-            {/* Left Column - Image */}
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 lg:items-center">
+            {/* Heading - Order 1 on mobile */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="order-1 lg:order-2 lg:col-start-2"
+            >
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+                className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-white leading-tight mb-6"
+              >
+                {t('Apie mus', 'About Us')}
+              </motion.h2>
+
+              {/* Subheading */}
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+                className="text-lg sm:text-xl md:text-2xl lg:text-[30px] text-gray-400 leading-relaxed max-w-xl lg:mb-auto"
+              >
+                {t(
+                  'Profesionalūs muitinės įforminimo sprendimai su aiškiu procesu ir garantuotais rezultatais.',
+                  'Professional customs clearance solutions with a clear process and guaranteed results.'
+                )}
+              </motion.p>
+            </motion.div>
+
+            {/* Image - Order 2 on mobile, Order 1 on desktop */}
             <motion.div
               ref={aboutImageRef}
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="relative h-full flex items-center"
+              className="relative flex items-center order-2 lg:order-1 lg:row-span-2"
             >
-              <div className="relative rounded-[3rem] overflow-hidden shadow-2xl w-full h-[70vh] max-h-[700px] transition-all duration-[600ms] ease-[cubic-bezier(0.23,1,0.32,1)] hover:rounded-[5px] group/image">
+              <div className="relative rounded-[3rem] overflow-hidden shadow-2xl w-full h-[50vh] sm:h-[60vh] lg:h-[70vh] max-h-[700px] transition-all duration-[600ms] ease-[cubic-bezier(0.23,1,0.32,1)] hover:rounded-[5px] group/image">
                 <BorderBeam
                   size={250}
                   duration={12}
@@ -212,101 +246,67 @@ const Home = () => {
               </div>
             </motion.div>
 
-            {/* Right Column - Content */}
+            {/* Card - Order 3 on mobile, with spacing above it */}
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="h-full flex flex-col py-4"
+              transition={{ delay: 0.4 }}
+              className="order-3 lg:order-2 mt-6 lg:mt-auto lg:col-start-2"
             >
-              {/* Top Section - Heading */}
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-                className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-white leading-tight mb-6"
-              >
-                {t('Apie mus', 'About Us')}
-              </motion.h2>
-
-              {/* Middle Section - Subheading (centered) */}
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3 }}
-                className="text-lg sm:text-xl md:text-2xl lg:text-[30px] text-gray-400 leading-relaxed max-w-xl mb-auto"
-              >
-                {t(
-                  'Profesionalūs muitinės įforminimo sprendimai su aiškiu procesu ir garantuotais rezultatais.',
-                  'Professional customs clearance solutions with a clear process and guaranteed results.'
-                )}
-              </motion.p>
-
-              {/* Bottom Section - Card */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.4 }}
-                className="mt-auto"
-              >
-                <Card className="relative overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-lg hover:shadow-xl backdrop-blur-sm">
-                  {/* Shine effect on hover */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  
-                  <BorderBeam
-                    size={200}
-                    duration={15}
-                    delay={1}
-                    colorFrom="#F2CA50"
-                    colorTo="#F2CA50"
-                    borderWidth={2}
-                  />
-                  <CardContent className="p-6 md:p-8">
-                    <div className="flex items-start gap-4 md:gap-6">
-                      {/* Icon */}
-                      <div className="flex-shrink-0">
-                        <div className="w-14 h-14 md:w-16 md:h-16 flex items-center justify-center">
-                          <CheckCircle className="h-14 w-14 md:h-16 md:w-16" style={{ color: '#F1C94F' }} weight="regular" />
-                        </div>
-                      </div>
-
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-xl md:text-2xl font-baloo font-bold text-white mb-3">
-                          {t('Patikimas rezultatas', 'Reliable Results')}
-                        </h3>
-                        
-                        {/* Main Stat */}
-                        <div className="flex flex-wrap items-baseline gap-2 mb-6">
-                          <span className="text-3xl md:text-4xl font-baloo font-bold bg-gradient-to-br from-[#F2CA50] to-[#F2CA50] bg-clip-text text-transparent">
-                            2,847
-                          </span>
-                          <span className="text-sm md:text-base text-gray-400">
-                            {t('deklaracijos per metus', 'declarations per year')}
-                          </span>
-                        </div>
-                        
-                        {/* Divider */}
-                        <div className="border-t border-zinc-800/50 mb-6"></div>
-                        
-                        <p className="text-sm md:text-base text-gray-400 leading-relaxed">
-                          {t(
-                            'Užtikriname greitą ir profesionalų krovinių muitinės įforminimą su 12+ metų patirtimi tarptautinės prekybos srityje.',
-                            'We ensure fast and professional cargo customs clearance with 12+ years of experience in international trade.'
-                          )}
-                        </p>
+              <Card className="relative overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-lg hover:shadow-xl backdrop-blur-sm">
+                {/* Shine effect on hover */}
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                
+                <BorderBeam
+                  size={200}
+                  duration={15}
+                  delay={1}
+                  colorFrom="#F2CA50"
+                  colorTo="#F2CA50"
+                  borderWidth={2}
+                />
+                <CardContent className="p-6 md:p-8">
+                  <div className="flex items-start gap-4 md:gap-6">
+                    {/* Icon */}
+                    <div className="flex-shrink-0">
+                      <div className="w-14 h-14 md:w-16 md:h-16 flex items-center justify-center">
+                        <CheckCircle className="h-14 w-14 md:h-16 md:w-16" style={{ color: '#F1C94F' }} weight="regular" />
                       </div>
                     </div>
-                  </CardContent>
-                  
-                  {/* Decorative corner accent */}
-                  <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </Card>
-              </motion.div>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-xl md:text-2xl font-baloo font-bold text-white mb-3">
+                        {t('Patikimas rezultatas', 'Reliable Results')}
+                      </h3>
+                      
+                      {/* Main Stat */}
+                      <div className="flex flex-wrap items-baseline gap-2 mb-6">
+                        <span className="text-3xl md:text-4xl font-baloo font-bold bg-gradient-to-br from-[#F2CA50] to-[#F2CA50] bg-clip-text text-transparent">
+                          2,847
+                        </span>
+                        <span className="text-sm md:text-base text-gray-400">
+                          {t('deklaracijos per metus', 'declarations per year')}
+                        </span>
+                      </div>
+                      
+                      {/* Divider */}
+                      <div className="border-t border-zinc-800/50 mb-6"></div>
+                      
+                      <p className="text-sm md:text-base text-gray-400 leading-relaxed">
+                        {t(
+                          'Užtikriname greitą ir profesionalų krovinių muitinės įforminimą su 12+ metų patirtimi tarptautinės prekybos srityje.',
+                          'We ensure fast and professional cargo customs clearance with 12+ years of experience in international trade.'
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+                
+                {/* Decorative corner accent */}
+                <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </Card>
             </motion.div>
           </div>
         </div>
@@ -361,7 +361,7 @@ const Home = () => {
                 return (
                   <Card
                     key={service.id}
-                    className="relative w-[380px] overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-lg hover:shadow-xl group cursor-pointer backdrop-blur-sm"
+                    className="relative w-[280px] sm:w-[320px] md:w-[380px] overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-lg hover:shadow-xl group cursor-pointer backdrop-blur-sm"
                   >
                     {/* Shine effect on hover */}
                     <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -403,7 +403,7 @@ const Home = () => {
                 return (
                   <Card
                     key={service.id}
-                    className="relative w-[380px] overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-lg hover:shadow-xl group cursor-pointer backdrop-blur-sm"
+                    className="relative w-[280px] sm:w-[320px] md:w-[380px] overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-lg hover:shadow-xl group cursor-pointer backdrop-blur-sm"
                   >
                     {/* Shine effect on hover */}
                     <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
