@@ -31,6 +31,11 @@
     touch-action: manipulation;
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
+    /* Use safe area insets for better mobile positioning */
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    /* Prevent layout shift from browser chrome */
+    position: fixed;
+    contain: layout style paint;
   }
   
   .viber-icon {
