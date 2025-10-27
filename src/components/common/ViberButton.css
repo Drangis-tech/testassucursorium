@@ -15,20 +15,27 @@
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: none;
   text-decoration: none;
-  will-change: transform;
+  will-change: transform, opacity;
+  /* Force GPU acceleration from the start on all devices */
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
 }
 
 /* Mobile optimizations for smooth animations */
 @media (max-width: 768px) {
   .viber-floating-button {
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     perspective: 1000px;
     -webkit-perspective: 1000px;
     touch-action: manipulation;
     -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .viber-icon {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
 }
 

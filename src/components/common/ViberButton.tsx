@@ -30,6 +30,8 @@ const ViberButton = () => {
             duration: isMobile ? 0.3 : 0.5,
             ease: 'power2.out',
             force3D: true,
+            transformPerspective: 1000,
+            clearProps: isMobile ? '' : 'all', // Don't clear props on mobile to maintain GPU layer
           });
         }
         // Hide button when scrolled back to top (less than 200px)
@@ -41,17 +43,20 @@ const ViberButton = () => {
             duration: isMobile ? 0.25 : 0.4,
             ease: 'power2.in',
             force3D: true,
+            transformPerspective: 1000,
           });
         }
       });
     };
 
-    // Initial state - hidden
+    // Initial state - hidden with GPU acceleration
     if (buttonRef.current) {
       gsap.set(buttonRef.current, {
         y: 100,
         opacity: 0,
         force3D: true,
+        transformPerspective: 1000,
+        transformStyle: 'preserve-3d',
       });
     }
 
