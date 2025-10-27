@@ -126,7 +126,7 @@ export default function DarkVeil({
       // Resolution scaling for mobile/low-end devices - balanced for visibility and performance
       let actualResolutionScale = resolutionScale;
       if (mobile) {
-        actualResolutionScale = Math.max(resolutionScale * 0.6, 0.5); // 60% resolution on mobile, min 0.5
+        actualResolutionScale = Math.max(resolutionScale * 0.75, 0.6); // 75% resolution on mobile, min 0.6
       } else if (lowEnd) {
         actualResolutionScale = Math.max(resolutionScale * 0.75, 0.6); // 75% on low-end, min 0.6
       }
@@ -147,7 +147,7 @@ export default function DarkVeil({
       const geometry = new Triangle(gl);
 
       // Mobile scale: zoom in on mobile to show the center of the pattern
-      const mobileScale = mobile ? 0.35 : 1.0;
+      const mobileScale = mobile ? 0.65 : 1.0;
 
       const program = new Program(gl, {
         vertex,
