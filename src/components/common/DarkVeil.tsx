@@ -147,7 +147,7 @@ export default function DarkVeil({
       const geometry = new Triangle(gl);
 
       // Mobile scale: zoom in on mobile to show the center of the pattern
-      const mobileScale = mobile ? 0.85 : 1.0;
+      const mobileScale = mobile ? 0.95 : 1.0;
 
       const program = new Program(gl, {
         vertex,

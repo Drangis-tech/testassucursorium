@@ -59,9 +59,9 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="mb-12 text-left"
+              className="mb-6 md:mb-12 text-left"
             >
-              <p className="text-2xl md:text-[35px] text-muted-foreground">
+              <p className="text-lg md:text-2xl lg:text-[35px] text-muted-foreground">
                 Customs Consulting
               </p>
             </motion.div>
@@ -70,7 +70,7 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-5xl md:text-[90px] font-baloo font-bold leading-tight text-left mb-16"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-[90px] font-baloo font-bold leading-tight text-left mb-8 md:mb-12 lg:mb-16"
             >
               Mes užtikriname sklandų, tikslų ir teisės aktus atitinkantį krovinių įforminimą bei atstovavimą muitinėje.
             </motion.h1>
