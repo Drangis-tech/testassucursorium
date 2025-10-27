@@ -13,7 +13,6 @@ const ViberButton = () => {
   useEffect(() => {
     // Detect if mobile device
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
-    let isScrolling = false;
     
     const handleScroll = () => {
       // Use requestAnimationFrame for smooth mobile performance
@@ -22,11 +21,8 @@ const ViberButton = () => {
       }
       
       // On mobile, wait for scroll to settle before first appearance
-      if (isMobile && !hasShownOnce.current) {
-        isScrolling = true;
-        if (scrollTimeout.current !== null) {
-          clearTimeout(scrollTimeout.current);
-        }
+      if (isMobile && !hasShownOnce.current && scrollTimeout.current !== null) {
+        clearTimeout(scrollTimeout.current);
       }
       
       rafId.current = requestAnimationFrame(() => {
