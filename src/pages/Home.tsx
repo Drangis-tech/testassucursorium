@@ -41,14 +41,14 @@ const Home = () => {
         {/* Background */}
         <div className="absolute inset-0 w-full h-full overflow-hidden">
           <DarkVeil 
-            speed={1.8}
+            speed={1.5}
             hueShift={202}
-            noiseIntensity={0.05}
-            scanlineIntensity={0.1}
-            scanlineFrequency={1}
-            warpAmount={0.3}
-            resolutionScale={0.75}
-            targetFPS={30}
+            noiseIntensity={0.03}
+            scanlineIntensity={0.08}
+            scanlineFrequency={0.8}
+            warpAmount={0.25}
+            resolutionScale={0.8}
+            targetFPS={24}
           />
         </div>
 

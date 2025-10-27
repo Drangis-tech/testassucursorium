@@ -121,19 +121,16 @@ export default function DarkVeil({
       const lowEnd = isLowEndDevice();
       const mobile = isMobile();
       
-      // Resolution scaling for mobile/low-end devices - more conservative to maintain quality
+      // Resolution scaling for mobile/low-end devices - balanced for visibility and performance
       let actualResolutionScale = resolutionScale;
       if (mobile) {
-        actualResolutionScale = resolutionScale * 0.5; // 50% resolution on mobile
+        actualResolutionScale = Math.max(resolutionScale * 0.6, 0.5); // 60% resolution on mobile, min 0.5
       } else if (lowEnd) {
-        actualResolutionScale = resolutionScale * 0.7; // 70% on low-end
+        actualResolutionScale = Math.max(resolutionScale * 0.75, 0.6); // 75% on low-end, min 0.6
       }
-      
-      // Ensure resolution scale maintains minimum quality
-      actualResolutionScale = Math.max(actualResolutionScale, 0.4);
 
-      // Limit DPR more aggressively
-      const maxDPR = mobile ? 1 : (lowEnd ? 1.5 : 2);
+      // Limit DPR more aggressively but ensure rendering
+      const maxDPR = mobile ? 1.5 : (lowEnd ? 2 : 2);
 
       const renderer = new Renderer({
         dpr: Math.min(window.devicePixelRatio, maxDPR),
@@ -205,6 +202,10 @@ export default function DarkVeil({
       };
     } catch (error) {
       console.error('DarkVeil: Error during initialization', error);
+      // Add fallback gradient background
+      if (canvas) {
+        canvas.style.background = 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%)';
+      }
     }
   }, [hueShift, noiseIntensity, scanlineIntensity, speed, scanlineFrequency, warpAmount, resolutionScale, targetFPS]);
   return <canvas ref={ref} className="darkveil-canvas" />;

@@ -9,5 +9,15 @@
   transform: translateZ(0);
   backface-visibility: hidden;
   object-fit: cover;
+  touch-action: none;
+  pointer-events: none;
+}
+
+/* Ensure canvas is visible on mobile */
+@media (max-width: 768px) {
+  .darkveil-canvas {
+    min-height: 100vh;
+    image-rendering: optimizeSpeed;
+  }
 }
 
