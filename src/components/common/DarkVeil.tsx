@@ -128,15 +128,10 @@ export default function DarkVeil({
       return;
     }
 
-    // Disable on mobile (< 768px) for performance
-    if (window.innerWidth < 768) {
-      canvas.style.background = 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%)';
-      return;
-    }
-
     try {
       const lowEnd = isLowEndDevice();
       const mobile = isMobile();
+      const isMobileViewport = window.innerWidth < 768;
       
       // Resolution scaling
       let actualResolutionScale = resolutionScale;
@@ -196,6 +191,18 @@ export default function DarkVeil({
       let lastFrameTime = 0;
       const frameInterval = 1000 / targetFPS;
 
+      // On mobile viewport, render single static frame
+      if (isMobileViewport) {
+        program.uniforms.uTime.value = 0; // Static at time 0
+        renderer.render({ scene: mesh });
+        
+        // Cleanup for static render
+        return () => {
+          window.removeEventListener('resize', resize);
+        };
+      }
+
+      // Desktop: Full animation loop
       const loop = (currentTime: number) => {
         if (!runningRef.current) return;
 
