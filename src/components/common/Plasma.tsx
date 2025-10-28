@@ -130,16 +130,11 @@ export const Plasma: React.FC<PlasmaProps> = ({
       return;
     }
 
-    // Disable on mobile (< 768px) for performance
-    if (window.innerWidth < 768) {
-      containerRef.current.style.background = 'radial-gradient(circle at 50% 50%, #F2CA5033, transparent 70%)';
-      return;
-    }
-
     try {
       // Optimize settings based on device
       const lowEnd = isLowEndDevice();
       const mobile = isMobile();
+      const isMobileViewport = window.innerWidth < 768;
       
       // Resolution scaling for mobile/low-end devices - balanced for quality and performance
       let actualResolutionScale = resolutionScale;
@@ -254,7 +249,29 @@ export const Plasma: React.FC<PlasmaProps> = ({
       const t0 = performance.now();
       let lastFrameTime = 0;
       const frameInterval = 1000 / targetFPS;
+
+      // On mobile viewport, render single static frame
+      if (isMobileViewport) {
+        (program.uniforms.iTime as any).value = 0; // Static at time 0
+        renderer.render({ scene: mesh });
+        
+        // Cleanup for static render
+        return () => {
+          ro.disconnect();
+          if (actualMouseInteractive && containerRef.current) {
+            containerRef.current.removeEventListener('mousemove', handleMouseMove);
+          }
+          try {
+            if (containerRef.current && canvas.parentNode === containerRef.current) {
+              containerRef.current.removeChild(canvas);
+            }
+          } catch (e) {
+            console.log('Plasma cleanup error:', e);
+          }
+        };
+      }
       
+      // Desktop: Full animation loop
       const loop = (t: number) => {
         if (!runningRef.current) return;
 
