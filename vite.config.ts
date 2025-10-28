@@ -48,13 +48,11 @@ export default defineConfig({
     },
     // Increase chunk size warning limit (we're code-splitting well)
     chunkSizeWarningLimit: 600,
-    // Enable minification
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true, // Remove console logs in production
-        drop_debugger: true,
-      },
+    // Use esbuild for faster minification (Vite default)
+    minify: 'esbuild',
+    // Remove console logs in production
+    esbuild: {
+      drop: ['console', 'debugger'],
     },
   },
 });
