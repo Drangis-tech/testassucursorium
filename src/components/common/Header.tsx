@@ -3,7 +3,11 @@ import { useLanguage } from '@/hooks/useLanguage';
 import logo from '@/assets/logo.png';
 import StaggeredMenu, { type StaggeredMenuItem } from './StaggeredMenu';
 
-const Header = () => {
+interface HeaderProps {
+  onMenuToggle?: (isOpen: boolean) => void;
+}
+
+const Header = ({ onMenuToggle }: HeaderProps) => {
   const { language, t } = useLanguage();
   const location = useLocation();
 
@@ -18,22 +22,22 @@ const Header = () => {
     {
       label: t('Apie mus', 'About Us'),
       ariaLabel: t('Sužinoti apie mus', 'Learn about us'),
-      link: basePath + '/#about',
+      link: (basePath || '') + '/#about',
     },
     {
       label: t('Paslaugos', 'Services'),
       ariaLabel: t('Peržiūrėti paslaugas', 'View our services'),
-      link: basePath + (language === 'en' ? '/services' : '/services'),
+      link: basePath + '/services',
     },
     {
       label: t('DUK', 'FAQ'),
       ariaLabel: t('Dažniausiai užduodami klausimai', 'Frequently asked questions'),
-      link: basePath + (language === 'en' ? '/faq' : '/duk'),
+      link: (basePath || '') + '/#faq',
     },
     {
       label: t('Kontaktai', 'Contacts'),
       ariaLabel: t('Susisiekite su mumis', 'Contact us'),
-      link: basePath + (language === 'en' ? '/contacts' : '/kontaktai'),
+      link: (basePath || '') + '/#contact-form',
     },
   ];
 
@@ -99,6 +103,8 @@ const Header = () => {
         accentColor="#F2CA50"
         isFixed={false}
         currentLanguage={language}
+        onMenuOpen={() => onMenuToggle?.(true)}
+        onMenuClose={() => onMenuToggle?.(false)}
       />
     </div>
   );

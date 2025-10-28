@@ -1,5 +1,5 @@
 'use client';
-import { ArrowRight } from '@phosphor-icons/react';
+import { CaretRight } from '@phosphor-icons/react';
 import React from 'react';
 
 interface FlowButtonProps {
@@ -52,12 +52,14 @@ export function FlowButton({
     className: `${baseClasses} ${sizeClasses} ${variantClasses} ${disabledClasses} ${className}`,
   };
 
+  const arrowSize = size === 'large' ? "w-5 h-5 md:w-6 md:h-6" : "w-4 h-4";
+  
   return (
     <Component {...componentProps as any}>
       {/* Left arrow (arr-2) */}
-      <ArrowRight 
-        className="absolute w-4 h-4 left-[-25%] stroke-current fill-none z-[9] group-hover:left-4 group-hover:stroke-white transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]"
-        weight="regular"
+      <CaretRight 
+        className={`absolute ${arrowSize} left-[-25%] z-[9] group-hover:left-4 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]`}
+        weight="bold"
       />
 
       {/* Text */}
@@ -69,9 +71,9 @@ export function FlowButton({
       <span className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 ${circleColor} rounded-[50%] opacity-0 group-hover:w-[220px] group-hover:h-[220px] group-hover:opacity-100 transition-all duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)]`}></span>
 
       {/* Right arrow (arr-1) */}
-      <ArrowRight 
-        className="absolute w-4 h-4 right-4 stroke-current fill-none z-[9] group-hover:right-[-25%] group-hover:stroke-white transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]"
-        weight="regular"
+      <CaretRight 
+        className={`absolute ${arrowSize} right-4 z-[9] group-hover:right-[-25%] transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]`}
+        weight="bold"
       />
     </Component>
   );

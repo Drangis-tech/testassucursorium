@@ -1,6 +1,6 @@
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
-import { CheckCircle } from '@phosphor-icons/react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, memo, useCallback, useEffect } from 'react';
+import { CheckCircle, CaretDown } from '@phosphor-icons/react';
 import { FlowButton } from '@/components/ui/flow-button';
 import { Card, CardContent } from '@/components/ui/card';
 import InquiryForm from '@/components/common/InquiryForm';
@@ -16,23 +16,112 @@ import { faqItems } from '@/lib/faq';
 import { services } from '@/lib/services';
 import { Marquee } from '@/components/ui/marquee';
 import aboutImage from '@/assets/about.webp';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
+
+const FAQCard = memo(({ item, index, language }: { item: any; index: number; language: string }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleToggle = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsOpen(prev => {
+      console.log(`FAQ ${index + 1} (${item.id}) clicked, current state: ${prev}, new state: ${!prev}`);
+      return !prev;
+    });
+  }, [index, item.id]);
+
+  return (
+    <div style={{ position: 'relative', zIndex: 1 }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: index * 0.05, duration: 0.5 }}
+        style={{ isolation: 'isolate' }}
+      >
+        <Card className="relative h-full overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-sm hover:shadow-xl group backdrop-blur-sm">
+          {/* Shine effect on hover */}
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+          
+          <BorderBeam
+            size={150}
+            duration={12}
+            delay={index * 0.5}
+            colorFrom="#F2CA50"
+            colorTo="#F2CA50"
+            borderWidth={2}
+          />
+          <CardContent className="p-0 relative" style={{ isolation: 'isolate' }}>
+            <div className="w-full relative" style={{ zIndex: 2 }}>
+              <button
+                onClick={handleToggle}
+                type="button"
+                aria-expanded={isOpen}
+                aria-controls={`faq-content-${item.id}`}
+                className="w-full px-6 pt-6 pb-4 text-left hover:no-underline group/trigger flex items-center justify-between cursor-pointer relative"
+                style={{ zIndex: 10, position: 'relative' }}
+              >
+                <div className="flex items-start gap-4 flex-1 pointer-events-none">
+                  {/* Number styled like header menu - on the left */}
+                  <span className="flex-shrink-0 text-[18px] font-normal text-[#F2CA50] tracking-normal select-none transition-opacity duration-300">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <span className="font-baloo font-semibold text-white text-lg flex-1 leading-tight pr-8">
+                    {item.question[language]}
+                  </span>
+                </div>
+                <CaretDown 
+                  className="h-4 w-4 shrink-0 transition-transform duration-200 pointer-events-none"
+                  style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                  weight="bold" 
+                />
+              </button>
+              <AnimatePresence initial={false}>
+                {isOpen && (
+                  <motion.div
+                    id={`faq-content-${item.id}`}
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-6 pb-6 pt-2 text-gray-400 leading-relaxed">
+                      <div className="pl-10 text-base">
+                        {item.answer[language]}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </CardContent>
+
+          {/* Decorative corner accent */}
+          <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+        </Card>
+      </motion.div>
+    </div>
+  );
+});
+
+FAQCard.displayName = 'FAQCard';
 
 const Home = () => {
   const { language, t } = useLanguage();
-  const aboutImageRef = useRef<HTMLDivElement>(null);
-  
-  const { scrollYProgress } = useScroll({
-    target: aboutImageRef,
-    offset: ["start end", "end start"]
-  });
-  
-  const imageY = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"]);
+
+  // Handle scroll to hash section on page load
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      // Small delay to ensure page is fully rendered
+      setTimeout(() => {
+        const element = document.querySelector(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, []);
 
   return (
     <div className="overflow-hidden">
@@ -217,14 +306,13 @@ const Home = () => {
 
             {/* Image - Order 2 on mobile, Order 1 on desktop */}
             <motion.div
-              ref={aboutImageRef}
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
               className="relative flex items-center order-2 lg:order-1 lg:row-span-2"
             >
-              <div className="relative rounded-[3rem] overflow-hidden shadow-2xl w-full h-[50vh] sm:h-[60vh] lg:h-[70vh] max-h-[700px] transition-all duration-[600ms] ease-[cubic-bezier(0.23,1,0.32,1)] hover:rounded-[5px] group/image">
+              <div className="relative rounded-[3rem] overflow-hidden shadow-2xl w-full h-[50vh] sm:h-[60vh] lg:h-[70vh] max-h-[700px]">
                 <BorderBeam
                   size={250}
                   duration={12}
@@ -233,15 +321,14 @@ const Home = () => {
                   colorTo="#F2CA50"
                 />
                 <div className="w-full h-full bg-gradient-to-br from-gray-900 to-black relative overflow-hidden">
-                  {/* Placeholder for main image with parallax */}
-                  <motion.img
+                  {/* Placeholder for main image */}
+                  <img
                     src={aboutImage}
                     alt="Customs Consulting Process"
-                    className="absolute top-0 left-0 w-full h-[120%] object-cover grayscale opacity-80 transition-all duration-[600ms] ease-[cubic-bezier(0.23,1,0.32,1)] group-hover/image:grayscale-0 group-hover/image:opacity-100"
-                    style={{ y: imageY }}
+                    className="absolute top-0 left-0 w-full h-full object-cover grayscale opacity-80"
                   />
                   {/* Dark overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/40 transition-opacity duration-[600ms] group-hover/image:opacity-50" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/40" />
                 </div>
               </div>
             </motion.div>
@@ -359,39 +446,44 @@ const Home = () => {
               {services.slice(0, 8).map((service) => {
                 const Icon = service.icon;
                 return (
-                  <Card
+                  <a
                     key={service.id}
-                    className="relative w-[280px] sm:w-[320px] md:w-[380px] overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-lg hover:shadow-xl group cursor-pointer backdrop-blur-sm"
+                    href={language === 'en' ? '/en/services' : '/services'}
+                    className="block"
                   >
-                    {/* Shine effect on hover */}
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    
-                    <CardContent className="p-6 relative">
-                      {/* Icon */}
-                      <div className="mb-4">
-                        <div className="w-14 h-14 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                          {service.image ? (
-                            <img src={service.image} alt={service.title[language]} className="h-14 w-14 object-contain" />
-                          ) : Icon ? (
-                            <Icon className="h-14 w-14" style={{ color: '#F1C94F' }} weight="regular" />
-                          ) : null}
+                    <Card
+                      className="relative w-[280px] sm:w-[320px] md:w-[380px] h-[280px] overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-lg hover:shadow-xl group cursor-pointer backdrop-blur-sm"
+                    >
+                      {/* Shine effect on hover */}
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      
+                      <CardContent className="p-6 relative">
+                        {/* Icon */}
+                        <div className="mb-4">
+                          <div className="w-14 h-14 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                            {service.image ? (
+                              <img src={service.image} alt={service.title[language]} className="h-14 w-14 object-contain" />
+                            ) : Icon ? (
+                              <Icon className="h-14 w-14" style={{ color: '#F1C94F' }} weight="regular" />
+                            ) : null}
+                          </div>
                         </div>
-                      </div>
 
-                      {/* Title */}
-                      <h3 className="text-xl font-baloo font-bold text-white mb-3 min-h-[56px]">
-                        {service.title[language]}
-                      </h3>
+                        {/* Title */}
+                        <h3 className="text-xl font-baloo font-bold text-white mb-3 min-h-[56px]">
+                          {service.title[language]}
+                        </h3>
 
-                      {/* Description */}
-                      <p className="text-sm text-gray-400 leading-relaxed line-clamp-4">
-                        {service.description[language]}
-                      </p>
+                        {/* Description */}
+                        <p className="text-sm text-gray-400 leading-relaxed line-clamp-4">
+                          {service.description[language]}
+                        </p>
 
-                      {/* Decorative corner accent */}
-                      <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    </CardContent>
-                  </Card>
+                        {/* Decorative corner accent */}
+                        <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      </CardContent>
+                    </Card>
+                  </a>
                 );
               })}
             </Marquee>
@@ -401,39 +493,44 @@ const Home = () => {
               {services.slice(8).map((service) => {
                 const Icon = service.icon;
                 return (
-                  <Card
+                  <a
                     key={service.id}
-                    className="relative w-[280px] sm:w-[320px] md:w-[380px] overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-lg hover:shadow-xl group cursor-pointer backdrop-blur-sm"
+                    href={language === 'en' ? '/en/services' : '/services'}
+                    className="block"
                   >
-                    {/* Shine effect on hover */}
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    
-                    <CardContent className="p-6 relative">
-                      {/* Icon */}
-                      <div className="mb-4">
-                        <div className="w-14 h-14 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                          {service.image ? (
-                            <img src={service.image} alt={service.title[language]} className="h-14 w-14 object-contain" />
-                          ) : Icon ? (
-                            <Icon className="h-14 w-14" style={{ color: '#F1C94F' }} weight="regular" />
-                          ) : null}
+                    <Card
+                      className="relative w-[280px] sm:w-[320px] md:w-[380px] h-[280px] overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-lg hover:shadow-xl group cursor-pointer backdrop-blur-sm"
+                    >
+                      {/* Shine effect on hover */}
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      
+                      <CardContent className="p-6 relative">
+                        {/* Icon */}
+                        <div className="mb-4">
+                          <div className="w-14 h-14 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                            {service.image ? (
+                              <img src={service.image} alt={service.title[language]} className="h-14 w-14 object-contain" />
+                            ) : Icon ? (
+                              <Icon className="h-14 w-14" style={{ color: '#F1C94F' }} weight="regular" />
+                            ) : null}
+                          </div>
                         </div>
-                      </div>
 
-                      {/* Title */}
-                      <h3 className="text-xl font-baloo font-bold text-white mb-3 min-h-[56px]">
-                        {service.title[language]}
-                      </h3>
+                        {/* Title */}
+                        <h3 className="text-xl font-baloo font-bold text-white mb-3 min-h-[56px]">
+                          {service.title[language]}
+                        </h3>
 
-                      {/* Description */}
-                      <p className="text-sm text-gray-400 leading-relaxed line-clamp-4">
-                        {service.description[language]}
-                      </p>
+                        {/* Description */}
+                        <p className="text-sm text-gray-400 leading-relaxed line-clamp-4">
+                          {service.description[language]}
+                        </p>
 
-                      {/* Decorative corner accent */}
-                      <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    </CardContent>
-                  </Card>
+                        {/* Decorative corner accent */}
+                        <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      </CardContent>
+                    </Card>
+                  </a>
                 );
               })}
             </Marquee>
@@ -476,12 +573,14 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            style={{ willChange: 'opacity, transform' }}
             className="relative overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 rounded-2xl p-8 md:p-12 text-center shadow-2xl"
           >
             <BorderBeam
               size={250}
               duration={15}
-              delay={0}
+              delay={0.6}
               colorFrom="#F2CA50"
               colorTo="#F2CA50"
               borderWidth={2}
@@ -514,7 +613,7 @@ const Home = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="relative w-full bg-black py-24 overflow-hidden">
+      <section id="faq" className="relative w-full bg-black py-24 overflow-hidden">
         {/* Background particles effect */}
         <div className="absolute inset-0">
           <Particles
@@ -560,70 +659,17 @@ const Home = () => {
           </motion.div>
 
           {/* FAQ Grid */}
-          <div className="grid md:grid-cols-2 gap-6 max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6 max-w-7xl mx-auto" style={{ isolation: 'isolate' }}>
             {faqItems.map((item, index) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05, duration: 0.5 }}
-              >
-                <Card className="relative h-full overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-sm hover:shadow-xl group backdrop-blur-sm">
-                  {/* Shine effect on hover */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  
-                  <BorderBeam
-                    size={150}
-                    duration={12}
-                    delay={index * 0.5}
-                    colorFrom="#F2CA50"
-                    colorTo="#F2CA50"
-                    borderWidth={2}
-                  />
-                  <CardContent className="p-0 relative">
-                    <Accordion type="single" collapsible className="w-full">
-                      <AccordionItem value={item.id} className="border-none">
-                        <AccordionTrigger className="px-6 pt-6 pb-4 text-left hover:no-underline group/trigger">
-                          <div className="flex items-start gap-4 w-full">
-                            {/* Number styled like header menu - on the left */}
-                            <span className="flex-shrink-0 text-[18px] font-normal text-[#F2CA50] tracking-normal pointer-events-none select-none transition-opacity duration-300">
-                              {String(index + 1).padStart(2, '0')}
-                            </span>
-                            <span className="font-baloo font-semibold text-white text-lg flex-1 leading-tight pr-8">
-                              {item.question[language]}
-                            </span>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="px-6 pb-6 pt-2 text-gray-400 leading-relaxed">
-                          <div className="pl-10 text-base">
-                            {item.answer[language]}
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </CardContent>
-
-                  {/* Decorative corner accent */}
-                  <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </Card>
-              </motion.div>
+              <div key={`faq-wrapper-${item.id}`} style={{ containIntrinsicSize: 'auto', contain: 'layout style' }}>
+                <FAQCard 
+                  item={item} 
+                  index={index} 
+                  language={language} 
+                />
+              </div>
             ))}
           </div>
-
-          {/* View All FAQ Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-            className="text-center mt-16"
-          >
-            <FlowButton
-              href={language === 'en' ? '/en/faq' : '/duk'}
-              text={t('Visi klausimai', 'All Questions')}
-            />
-          </motion.div>
         </div>
       </section>
 
@@ -770,45 +816,8 @@ const Home = () => {
                     </motion.div>
 
                     {/* Divider */}
-                    <div className="border-t border-zinc-800/50 pt-8 mt-8">
-                      {/* Quick Links */}
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.7 }}
-                        className="space-y-4"
-                      >
-                        <h3 className="text-lg font-baloo font-semibold text-white mb-4">
-                          {t('Greitos nuorodos', 'Quick Links')}
-                        </h3>
-                        <div className="grid grid-cols-2 gap-3">
-                          <a 
-                            href={language === 'en' ? '/en' : '/'} 
-                            className="text-gray-400 hover:text-[#F2CA50] transition-colors duration-300 text-sm"
-                          >
-                            {t('Pagrindinis', 'Home')}
-                          </a>
-                          <a 
-                            href={language === 'en' ? '/en/services' : '/services'} 
-                            className="text-gray-400 hover:text-[#F2CA50] transition-colors duration-300 text-sm"
-                          >
-                            {t('Paslaugos', 'Services')}
-                          </a>
-                          <a 
-                            href={language === 'en' ? '/en/faq' : '/duk'} 
-                            className="text-gray-400 hover:text-[#F2CA50] transition-colors duration-300 text-sm"
-                          >
-                            {t('DUK', 'FAQ')}
-                          </a>
-                          <a 
-                            href="#contact-form" 
-                            className="text-gray-400 hover:text-[#F2CA50] transition-colors duration-300 text-sm"
-                          >
-                            {t('Kontaktai', 'Contact')}
-                          </a>
-                        </div>
-                      </motion.div>
+                    <div className="border-t border-zinc-800/50 pt-44 mt-8">
+
 
                       {/* Working Hours */}
                       <motion.div

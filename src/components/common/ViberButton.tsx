@@ -3,7 +3,11 @@ import gsap from 'gsap';
 import './ViberButton.css';
 import viberLogo from '@/assets/logo/viber.svg';
 
-const ViberButton = () => {
+interface ViberButtonProps {
+  isMenuOpen?: boolean;
+}
+
+const ViberButton = ({ isMenuOpen = false }: ViberButtonProps) => {
   const buttonRef = useRef<HTMLAnchorElement>(null);
   const isVisible = useRef(false);
   const rafId = useRef<number | null>(null);
@@ -99,6 +103,27 @@ const ViberButton = () => {
       }
     };
   }, []);
+
+  // Hide button when menu is open
+  useEffect(() => {
+    if (!buttonRef.current) return;
+    
+    if (isMenuOpen) {
+      gsap.to(buttonRef.current, {
+        opacity: 0,
+        pointerEvents: 'none',
+        duration: 0.3,
+        ease: 'power2.out',
+      });
+    } else if (isVisible.current) {
+      gsap.to(buttonRef.current, {
+        opacity: 1,
+        pointerEvents: 'auto',
+        duration: 0.3,
+        ease: 'power2.out',
+      });
+    }
+  }, [isMenuOpen]);
 
   const handleClick = () => {
     // Opens Viber chat - works on both web and mobile

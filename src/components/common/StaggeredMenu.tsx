@@ -367,7 +367,13 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
         })()}
       </div>
       <header className="staggered-menu-header" aria-label="Main navigation header">
-        <div className="sm-logo" aria-label="Logo">
+        <a href="/" className="sm-logo" aria-label="Logo" onClick={(e) => {
+          // If already on homepage, scroll to top
+          if (window.location.pathname === '/' || window.location.pathname === '/en') {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }}>
           <img
             src={logoUrl || '/src/assets/logos/reactbits-gh-white.svg'}
             alt="Logo"
@@ -376,7 +382,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
             width={110}
             height={24}
           />
-        </div>
+        </a>
         <button
           ref={toggleBtnRef}
           className="sm-toggle"
