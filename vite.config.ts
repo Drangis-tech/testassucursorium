@@ -20,6 +20,10 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  // Remove console logs in production
+  esbuild: {
+    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
+  },
   server: {
     port: 8080,
   },
@@ -48,11 +52,5 @@ export default defineConfig({
     },
     // Increase chunk size warning limit (we're code-splitting well)
     chunkSizeWarningLimit: 600,
-    // Use esbuild for faster minification (Vite default)
-    minify: 'esbuild',
-    // Remove console logs in production
-    esbuild: {
-      drop: ['console', 'debugger'],
-    },
   },
 });
