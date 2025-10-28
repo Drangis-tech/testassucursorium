@@ -1,5 +1,6 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { Link } from 'react-router-dom';
 import './StaggeredMenu.css';
 
 export interface StaggeredMenuItem {
@@ -367,7 +368,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
         })()}
       </div>
       <header className="staggered-menu-header" aria-label="Main navigation header">
-        <a href="/" className="sm-logo" aria-label="Logo" onClick={(e) => {
+        <Link to="/" className="sm-logo" aria-label="Logo" onClick={(e) => {
           // If already on homepage, scroll to top
           if (window.location.pathname === '/' || window.location.pathname === '/en') {
             e.preventDefault();
@@ -382,7 +383,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
             width={110}
             height={24}
           />
-        </a>
+        </Link>
         <button
           ref={toggleBtnRef}
           className="sm-toggle"
@@ -412,13 +413,49 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
         <div className="sm-panel-inner">
           <ul className="sm-panel-list" role="list" data-numbering={displayItemNumbering || undefined}>
             {items && items.length ? (
-              items.map((it, idx) => (
-                <li className="sm-panel-itemWrap" key={it.label + idx}>
-                  <a className="sm-panel-item" href={it.link} aria-label={it.ariaLabel} data-index={idx + 1}>
-                    <span className="sm-panel-itemLabel">{it.label}</span>
-                  </a>
-                </li>
-              ))
+              items.map((it, idx) => {
+                // Determine if link is internal (starts with /) or external/hash link
+                const isHashLink = it.link.startsWith('#') || it.link.includes('#');
+                const isExternal = it.link.startsWith('http://') || it.link.startsWith('https://') || 
+                                   it.link.startsWith('tel:') || it.link.startsWith('mailto:');
+                const isInternal = it.link.startsWith('/') && !isHashLink && !isExternal;
+                
+                return (
+                  <li className="sm-panel-itemWrap" key={it.label + idx}>
+                    {isInternal ? (
+                      <Link 
+                        to={it.link} 
+                        className="sm-panel-item" 
+                        aria-label={it.ariaLabel} 
+                        data-index={idx + 1}
+                        onClick={() => {
+                          // Close menu after clicking
+                          if (openRef.current) {
+                            toggleMenu();
+                          }
+                        }}
+                      >
+                        <span className="sm-panel-itemLabel">{it.label}</span>
+                      </Link>
+                    ) : (
+                      <a 
+                        className="sm-panel-item" 
+                        href={it.link} 
+                        aria-label={it.ariaLabel} 
+                        data-index={idx + 1}
+                        onClick={() => {
+                          // Close menu after clicking
+                          if (openRef.current) {
+                            toggleMenu();
+                          }
+                        }}
+                      >
+                        <span className="sm-panel-itemLabel">{it.label}</span>
+                      </a>
+                    )}
+                  </li>
+                );
+              })
             ) : (
               <li className="sm-panel-itemWrap" aria-hidden="true">
                 <span className="sm-panel-item">

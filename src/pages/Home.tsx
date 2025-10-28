@@ -16,6 +16,7 @@ import { faqItems } from '@/lib/faq';
 import { services } from '@/lib/services';
 import { Marquee } from '@/components/ui/marquee';
 import aboutImage from '@/assets/about.webp';
+import { Link } from 'react-router-dom';
 
 const FAQCard = memo(({ item, index, language }: { item: any; index: number; language: string }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -446,9 +447,9 @@ const Home = () => {
               {services.slice(0, 8).map((service) => {
                 const Icon = service.icon;
                 return (
-                  <a
+                  <Link
                     key={service.id}
-                    href={language === 'en' ? '/en/services' : '/services'}
+                    to={language === 'en' ? '/en/services' : '/services'}
                     className="block"
                   >
                     <Card
@@ -483,7 +484,7 @@ const Home = () => {
                         <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </CardContent>
                     </Card>
-                  </a>
+                  </Link>
                 );
               })}
             </Marquee>
@@ -493,9 +494,9 @@ const Home = () => {
               {services.slice(8).map((service) => {
                 const Icon = service.icon;
                 return (
-                  <a
+                  <Link
                     key={service.id}
-                    href={language === 'en' ? '/en/services' : '/services'}
+                    to={language === 'en' ? '/en/services' : '/services'}
                     className="block"
                   >
                     <Card
@@ -530,7 +531,7 @@ const Home = () => {
                         <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </CardContent>
                     </Card>
-                  </a>
+                  </Link>
                 );
               })}
             </Marquee>

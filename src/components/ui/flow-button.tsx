@@ -1,6 +1,7 @@
 'use client';
 import { CaretRight } from '@phosphor-icons/react';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 interface FlowButtonProps {
   text?: string;
@@ -43,19 +44,40 @@ export function FlowButton({
   
   const circleColor = variant === 'outline' ? 'bg-zinc-800' : 'bg-gradient-to-br from-[#F2CA50] to-[#F2CA50]';
 
-  const Component = href ? 'a' : 'button';
-  const componentProps = {
-    ...(href && { href }),
+  // Determine if href is internal (starts with /) or external/hash link
+  const isHashLink = href && (href.startsWith('#') || href.includes('#'));
+  const isExternalLink = href && (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('tel:') || href.startsWith('mailto:'));
+  const isInternal = href && href.startsWith('/') && !isHashLink && !isExternalLink;
+  
+  // Use Link for internal routes (no hashes), 'a' for hash links and external, 'button' for no href
+  let Component: any = 'button';
+  let componentProps: any = {
     ...(onClick && { onClick }),
     ...(!href && { type }),
     ...(disabled && { disabled }),
     className: `${baseClasses} ${sizeClasses} ${variantClasses} ${disabledClasses} ${className}`,
   };
 
+  if (href) {
+    if (isInternal) {
+      Component = Link;
+      componentProps = {
+        ...componentProps,
+        to: href,
+      };
+    } else {
+      Component = 'a';
+      componentProps = {
+        ...componentProps,
+        href,
+      };
+    }
+  }
+
   const arrowSize = size === 'large' ? "w-5 h-5 md:w-6 md:h-6" : "w-4 h-4";
   
   return (
-    <Component {...componentProps as any}>
+    <Component {...componentProps}>
       {/* Left arrow (arr-2) */}
       <CaretRight 
         className={`absolute ${arrowSize} left-[-25%] z-[9] group-hover:left-4 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]`}
