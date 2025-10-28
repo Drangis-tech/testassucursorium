@@ -1,11 +1,9 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, memo, useCallback, useEffect } from 'react';
+import { useState, memo, useCallback, useEffect, lazy, Suspense } from 'react';
 import { CheckCircle, CaretDown } from '@phosphor-icons/react';
 import { FlowButton } from '@/components/ui/flow-button';
 import { Card, CardContent } from '@/components/ui/card';
 import InquiryForm from '@/components/common/InquiryForm';
-import DarkVeil from '@/components/common/DarkVeil';
-import Plasma from '@/components/common/Plasma';
 import { NumberTicker } from '@/components/ui/number-ticker';
 import { Particles } from '@/components/ui/particles';
 import { DotPattern } from '@/components/ui/dot-pattern';
@@ -17,6 +15,10 @@ import { services } from '@/lib/services';
 import { Marquee } from '@/components/ui/marquee';
 import aboutImage from '@/assets/about.webp';
 import { Link } from 'react-router-dom';
+
+// Lazy-load heavy WebGL background animations
+const DarkVeil = lazy(() => import('@/components/common/DarkVeil'));
+const Plasma = lazy(() => import('@/components/common/Plasma'));
 
 const FAQCard = memo(({ item, index, language }: { item: any; index: number; language: string }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -130,16 +132,18 @@ const Home = () => {
       <section className="relative w-full h-screen min-h-screen flex items-center justify-center">
         {/* Background */}
         <div className="absolute inset-0 w-full h-full overflow-hidden">
-          <DarkVeil 
-            speed={1.5}
-            hueShift={202}
-            noiseIntensity={0.03}
-            scanlineIntensity={0.08}
-            scanlineFrequency={0.8}
-            warpAmount={0.25}
-            resolutionScale={0.8}
-            targetFPS={24}
-          />
+          <Suspense fallback={<div className="absolute inset-0 bg-gradient-to-b from-black via-[#0a0a1a] to-black" />}>
+            <DarkVeil 
+              speed={1.5}
+              hueShift={202}
+              noiseIntensity={0.03}
+              scanlineIntensity={0.08}
+              scanlineFrequency={0.8}
+              warpAmount={0.25}
+              resolutionScale={0.8}
+              targetFPS={24}
+            />
+          </Suspense>
         </div>
 
         {/* Content */}
@@ -184,7 +188,7 @@ const Home = () => {
 
 
       {/* Statistics */}
-      <section className="relative w-full bg-black py-24 overflow-hidden">
+      <section className="relative w-full bg-black py-24 overflow-hidden" style={{ contentVisibility: 'auto' }}>
         {/* Background particles effect */}
         <div className="absolute inset-0">
           <Particles
@@ -245,7 +249,7 @@ const Home = () => {
       </section>
 
       {/* About Us Section */}
-      <section id="about" className="relative w-full min-h-screen bg-black overflow-hidden py-12 lg:py-24 lg:flex lg:items-center">
+      <section id="about" className="relative w-full min-h-screen bg-black overflow-hidden py-12 lg:py-24 lg:flex lg:items-center" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 800px' }}>
         {/* Background particles effect */}
         <div className="absolute inset-0">
           <Particles
@@ -401,7 +405,7 @@ const Home = () => {
       </section>
 
       {/* Services Carousel Section */}
-      <section className="relative w-full bg-black py-24 overflow-hidden">
+      <section className="relative w-full bg-black py-24 overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 600px' }}>
         {/* Background particles effect */}
         <div className="absolute inset-0">
           <Particles
@@ -554,7 +558,7 @@ const Home = () => {
       </section>
 
       {/* CTA Strip */}
-      <section className="relative w-full bg-black py-16 overflow-hidden">
+      <section className="relative w-full bg-black py-16 overflow-hidden" style={{ contentVisibility: 'auto' }}>
         {/* Background particles effect */}
         <div className="absolute inset-0">
           <Particles
@@ -614,7 +618,7 @@ const Home = () => {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="relative w-full bg-black py-24 overflow-hidden">
+      <section id="faq" className="relative w-full bg-black py-24 overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 800px' }}>
         {/* Background particles effect */}
         <div className="absolute inset-0">
           <Particles
@@ -675,19 +679,21 @@ const Home = () => {
       </section>
 
       {/* Contact Form & Footer Section */}
-      <section id="contact-form" className="relative w-full bg-black py-24 overflow-hidden min-h-screen">
+      <section id="contact-form" className="relative w-full bg-black py-24 overflow-hidden min-h-screen" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 900px' }}>
         {/* Background */}
         <div className="absolute inset-0 w-full h-full z-0">
-          <Plasma 
-            color="#F2CA50"
-            speed={0.8}
-            direction="forward"
-            scale={1.0}
-            opacity={0.7}
-            mouseInteractive={true}
-            targetFPS={24}
-            resolutionScale={0.6}
-          />
+          <Suspense fallback={<div className="absolute inset-0 bg-gradient-to-br from-black via-[#1a1510] to-black" />}>
+            <Plasma 
+              color="#F2CA50"
+              speed={0.8}
+              direction="forward"
+              scale={1.0}
+              opacity={0.7}
+              mouseInteractive={true}
+              targetFPS={24}
+              resolutionScale={0.6}
+            />
+          </Suspense>
         </div>
         
         {/* Dark overlay to tone down the effect */}

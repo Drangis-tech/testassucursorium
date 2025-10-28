@@ -5,15 +5,36 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="UAB Customs Consulting - Patikimas muitinės tarpininkas. Profesionalios muitinės paslaugos Lietuvoje." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet" />
+    
+    <!-- Preload critical fonts for better LCP -->
+    <link rel="preload" href="/fonts/manrope-variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/baloo2-variable.woff2" as="font" type="font/woff2" crossorigin />
+    
     <title>Customs Consulting - Muitinės Tarpininkas</title>
     <style>
+      /* Critical CSS - Inline above-the-fold styles for faster LCP */
       html, body {
         margin: 0;
         padding: 0;
         background-color: #000000;
+        color: #fafafa;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+      
+      /* Hero section critical styles */
+      #root {
+        min-height: 100vh;
+        background: linear-gradient(to bottom, #000000 0%, #0a0a1a 50%, #000000 100%);
+      }
+      
+      /* Prevent layout shift */
+      .font-baloo {
+        font-family: 'Baloo 2', system-ui, sans-serif;
+      }
+      
+      /* Optimize paint containment */
+      section {
+        contain: layout style;
       }
     </style>
   </head>

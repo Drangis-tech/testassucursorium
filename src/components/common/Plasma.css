@@ -5,6 +5,8 @@
   overflow: hidden;
   will-change: transform;
   transform: translateZ(0);
+  /* Contain painting so it doesn't trigger global reflow */
+  contain: paint layout style;
 }
 
 .plasma-container canvas {
@@ -17,5 +19,16 @@
   will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
+  /* Contain painting so it doesn't trigger global reflow */
+  contain: paint layout style;
+}
+
+/* Disable animations for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .plasma-container,
+  .plasma-container canvas {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 

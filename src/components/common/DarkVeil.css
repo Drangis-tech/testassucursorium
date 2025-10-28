@@ -11,6 +11,16 @@
   object-fit: cover;
   touch-action: none;
   pointer-events: none;
+  /* Contain painting so it doesn't trigger global reflow */
+  contain: paint layout style;
+}
+
+/* Disable animations for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .darkveil-canvas {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 /* Ensure canvas is visible on mobile */

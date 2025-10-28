@@ -94,7 +94,6 @@ const isMobile = () => {
 };
 
 const isLowEndDevice = () => {
-  // Check for low-end indicators
   const isSlowCPU = navigator.hardwareConcurrency ? navigator.hardwareConcurrency <= 4 : false;
   const isSlowGPU = !window.WebGL2RenderingContext;
   return isMobile() || isSlowCPU || isSlowGPU;
@@ -111,6 +110,9 @@ export default function DarkVeil({
   targetFPS = 60
 }: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
+  const rafRef = useRef<number | null>(null);
+  const runningRef = useRef(false);
+
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
@@ -118,35 +120,45 @@ export default function DarkVeil({
     const parent = canvas.parentElement;
     if (!parent) return;
 
+    // Check for prefers-reduced-motion
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) {
+      // Show fallback static gradient
+      canvas.style.background = 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%)';
+      return;
+    }
+
+    // Disable on mobile (< 768px) for performance
+    if (window.innerWidth < 768) {
+      canvas.style.background = 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%)';
+      return;
+    }
+
     try {
-      // Optimize settings based on device
       const lowEnd = isLowEndDevice();
       const mobile = isMobile();
       
-      // Resolution scaling for mobile/low-end devices - balanced for visibility and performance
+      // Resolution scaling
       let actualResolutionScale = resolutionScale;
       if (mobile) {
-        actualResolutionScale = Math.max(resolutionScale * 0.75, 0.6); // 75% resolution on mobile, min 0.6
+        actualResolutionScale = Math.max(resolutionScale * 0.75, 0.6);
       } else if (lowEnd) {
-        actualResolutionScale = Math.max(resolutionScale * 0.75, 0.6); // 75% on low-end, min 0.6
+        actualResolutionScale = Math.max(resolutionScale * 0.75, 0.6);
       }
 
-      // Limit DPR more aggressively but ensure rendering
       const maxDPR = mobile ? 1.5 : (lowEnd ? 2 : 2);
 
       const renderer = new Renderer({
         dpr: Math.min(window.devicePixelRatio, maxDPR),
         canvas,
         alpha: false,
-        antialias: false, // Disable antialiasing for performance
+        antialias: false,
         depth: false,
         stencil: false
       });
 
       const gl = renderer.gl;
       const geometry = new Triangle(gl);
-
-      // Mobile scale: zoom in on mobile to show the center of the pattern
       const mobileScale = mobile ? 0.95 : 1.0;
 
       const program = new Program(gl, {
@@ -166,54 +178,95 @@ export default function DarkVeil({
 
       const mesh = new Mesh(gl, { geometry, program });
 
+      // Cache sizes to avoid layout thrash
+      let cachedWidth = 0;
+      let cachedHeight = 0;
+
       const resize = () => {
-        const w = parent.clientWidth,
-          h = parent.clientHeight;
-        renderer.setSize(w * actualResolutionScale, h * actualResolutionScale);
-        program.uniforms.uResolution.value.set(w, h);
+        cachedWidth = parent.clientWidth;
+        cachedHeight = parent.clientHeight;
+        renderer.setSize(cachedWidth * actualResolutionScale, cachedHeight * actualResolutionScale);
+        program.uniforms.uResolution.value.set(cachedWidth, cachedHeight);
       };
 
       window.addEventListener('resize', resize);
       resize();
 
       const start = performance.now();
-      let frame = 0;
       let lastFrameTime = 0;
       const frameInterval = 1000 / targetFPS;
 
       const loop = (currentTime: number) => {
-        frame = requestAnimationFrame(loop);
+        if (!runningRef.current) return;
+
+        rafRef.current = requestAnimationFrame(loop);
         
-        // Throttle frame rate
+        // Throttle frame rate (~30 FPS)
         const elapsed = currentTime - lastFrameTime;
         if (elapsed < frameInterval) {
           return;
         }
         lastFrameTime = currentTime - (elapsed % frameInterval);
 
+        // Only transform/opacity - no layout reads
         program.uniforms.uTime.value = ((currentTime - start) / 1000) * speed;
-        program.uniforms.uHueShift.value = hueShift;
-        program.uniforms.uNoise.value = noiseIntensity;
-        program.uniforms.uScan.value = scanlineIntensity;
-        program.uniforms.uScanFreq.value = scanlineFrequency;
-        program.uniforms.uWarp.value = warpAmount;
         renderer.render({ scene: mesh });
       };
 
-      loop(performance.now());
+      // Handle visibility changes
+      const onVisibilityChange = () => {
+        if (document.visibilityState === 'visible') {
+          startAnimation();
+        } else {
+          stopAnimation();
+        }
+      };
+
+      const startAnimation = () => {
+        if (!runningRef.current) {
+          runningRef.current = true;
+          rafRef.current = requestAnimationFrame(loop);
+        }
+      };
+
+      const stopAnimation = () => {
+        runningRef.current = false;
+        if (rafRef.current !== null) {
+          cancelAnimationFrame(rafRef.current);
+          rafRef.current = null;
+        }
+      };
+
+      document.addEventListener('visibilitychange', onVisibilityChange);
+      
+      // IntersectionObserver to pause when out of view
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            startAnimation();
+          } else {
+            stopAnimation();
+          }
+        });
+      }, { threshold: 0 });
+
+      observer.observe(canvas);
+      startAnimation();
 
       return () => {
-        cancelAnimationFrame(frame);
+        stopAnimation();
+        observer.disconnect();
+        document.removeEventListener('visibilitychange', onVisibilityChange);
         window.removeEventListener('resize', resize);
       };
     } catch (error) {
       console.error('DarkVeil: Error during initialization', error);
-      // Add fallback gradient background
       if (canvas) {
         canvas.style.background = 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%)';
       }
     }
   }, [hueShift, noiseIntensity, scanlineIntensity, speed, scanlineFrequency, warpAmount, resolutionScale, targetFPS]);
+  
   return <canvas ref={ref} className="darkveil-canvas" />;
 }
 

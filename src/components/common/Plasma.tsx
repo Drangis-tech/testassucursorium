@@ -114,9 +114,25 @@ export const Plasma: React.FC<PlasmaProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mousePos = useRef({ x: 0, y: 0 });
+  const rafRef = useRef<number | null>(null);
+  const runningRef = useRef(false);
 
   useEffect(() => {
     if (!containerRef.current) {
+      return;
+    }
+
+    // Check for prefers-reduced-motion
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) {
+      // Show fallback static gradient
+      containerRef.current.style.background = 'radial-gradient(circle at 50% 50%, #F2CA5033, transparent 70%)';
+      return;
+    }
+
+    // Disable on mobile (< 768px) for performance
+    if (window.innerWidth < 768) {
+      containerRef.current.style.background = 'radial-gradient(circle at 50% 50%, #F2CA5033, transparent 70%)';
       return;
     }
 
@@ -217,11 +233,15 @@ export const Plasma: React.FC<PlasmaProps> = ({
         containerRef.current.addEventListener('mousemove', handleMouseMove, { passive: true });
       }
 
+      // Cache sizes to avoid layout thrash
+      let cachedWidth = 0;
+      let cachedHeight = 0;
+
       const setSize = () => {
         const rect = containerRef.current!.getBoundingClientRect();
-        const width = Math.max(1, Math.floor(rect.width * actualResolutionScale));
-        const height = Math.max(1, Math.floor(rect.height * actualResolutionScale));
-        renderer.setSize(width, height);
+        cachedWidth = Math.max(1, Math.floor(rect.width * actualResolutionScale));
+        cachedHeight = Math.max(1, Math.floor(rect.height * actualResolutionScale));
+        renderer.setSize(cachedWidth, cachedHeight);
         const res = program.uniforms.iResolution.value as Float32Array;
         res[0] = gl.drawingBufferWidth;
         res[1] = gl.drawingBufferHeight;
@@ -231,13 +251,14 @@ export const Plasma: React.FC<PlasmaProps> = ({
       ro.observe(containerRef.current);
       setSize();
 
-      let raf = 0;
       const t0 = performance.now();
       let lastFrameTime = 0;
       const frameInterval = 1000 / targetFPS;
       
       const loop = (t: number) => {
-        raf = requestAnimationFrame(loop);
+        if (!runningRef.current) return;
+
+        rafRef.current = requestAnimationFrame(loop);
         
         // Throttle frame rate
         const elapsed = t - lastFrameTime;
@@ -253,13 +274,57 @@ export const Plasma: React.FC<PlasmaProps> = ({
           (program.uniforms.uDirection as any).value = cycle;
         }
 
+        // Only transform/opacity - no layout reads
         (program.uniforms.iTime as any).value = timeValue;
         renderer.render({ scene: mesh });
       };
-      raf = requestAnimationFrame(loop);
+
+      // Handle visibility changes
+      const onVisibilityChange = () => {
+        if (document.visibilityState === 'visible') {
+          startAnimation();
+        } else {
+          stopAnimation();
+        }
+      };
+
+      const startAnimation = () => {
+        if (!runningRef.current) {
+          runningRef.current = true;
+          rafRef.current = requestAnimationFrame(loop);
+        }
+      };
+
+      const stopAnimation = () => {
+        runningRef.current = false;
+        if (rafRef.current !== null) {
+          cancelAnimationFrame(rafRef.current);
+          rafRef.current = null;
+        }
+      };
+
+      document.addEventListener('visibilitychange', onVisibilityChange);
+      
+      // IntersectionObserver to pause when out of view
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            startAnimation();
+          } else {
+            stopAnimation();
+          }
+        });
+      }, { threshold: 0 });
+
+      if (containerRef.current) {
+        observer.observe(containerRef.current);
+      }
+      startAnimation();
 
       return () => {
-        cancelAnimationFrame(raf);
+        stopAnimation();
+        observer.disconnect();
+        document.removeEventListener('visibilitychange', onVisibilityChange);
         ro.disconnect();
         if (actualMouseInteractive && containerRef.current) {
           containerRef.current.removeEventListener('mousemove', handleMouseMove);
