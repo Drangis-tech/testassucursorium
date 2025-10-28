@@ -291,7 +291,22 @@ export const Plasma: React.FC<PlasmaProps> = ({
       const startAnimation = () => {
         if (!runningRef.current) {
           runningRef.current = true;
-          rafRef.current = requestAnimationFrame(loop);
+          
+          // Use requestIdleCallback to start animation during idle time
+          // This prevents blocking the main thread during initial render
+          if ('requestIdleCallback' in window) {
+            (window as any).requestIdleCallback(
+              () => {
+                rafRef.current = requestAnimationFrame(loop);
+              },
+              { timeout: 2000 }
+            );
+          } else {
+            // Fallback with slight delay
+            setTimeout(() => {
+              rafRef.current = requestAnimationFrame(loop);
+            }, 200);
+          }
         }
       };
 

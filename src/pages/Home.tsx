@@ -15,8 +15,9 @@ import { services } from '@/lib/services';
 import { Marquee } from '@/components/ui/marquee';
 import aboutImage from '@/assets/about.webp';
 import { Link } from 'react-router-dom';
+import ClientMountWhenVisible from '@/components/common/ClientMountWhenVisible';
 
-// Lazy-load heavy WebGL background animations
+// Lazy-load heavy WebGL background animations - only load when needed
 const DarkVeil = lazy(() => import('@/components/common/DarkVeil'));
 const Plasma = lazy(() => import('@/components/common/Plasma'));
 
@@ -130,20 +131,22 @@ const Home = () => {
     <div className="overflow-hidden">
       {/* Hero Section */}
       <section className="relative w-full h-screen min-h-screen flex items-center justify-center">
-        {/* Background */}
+        {/* Background - Delayed load to not block first paint */}
         <div className="absolute inset-0 w-full h-full overflow-hidden">
-          <Suspense fallback={<div className="absolute inset-0 bg-gradient-to-b from-black via-[#0a0a1a] to-black" />}>
-            <DarkVeil 
-              speed={1.5}
-              hueShift={202}
-              noiseIntensity={0.03}
-              scanlineIntensity={0.08}
-              scanlineFrequency={0.8}
-              warpAmount={0.25}
-              resolutionScale={0.8}
-              targetFPS={24}
-            />
-          </Suspense>
+          <ClientMountWhenVisible rootMargin="0px">
+            <Suspense fallback={<div className="absolute inset-0 bg-gradient-to-b from-black via-[#0a0a1a] to-black" />}>
+              <DarkVeil 
+                speed={1.5}
+                hueShift={202}
+                noiseIntensity={0.03}
+                scanlineIntensity={0.08}
+                scanlineFrequency={0.8}
+                warpAmount={0.25}
+                resolutionScale={0.8}
+                targetFPS={24}
+              />
+            </Suspense>
+          </ClientMountWhenVisible>
         </div>
 
         {/* Content */}
@@ -680,20 +683,22 @@ const Home = () => {
 
       {/* Contact Form & Footer Section */}
       <section id="contact-form" className="relative w-full bg-black py-24 overflow-hidden min-h-screen" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 900px' }}>
-        {/* Background */}
+        {/* Background - Delayed load until section is visible */}
         <div className="absolute inset-0 w-full h-full z-0">
-          <Suspense fallback={<div className="absolute inset-0 bg-gradient-to-br from-black via-[#1a1510] to-black" />}>
-            <Plasma 
-              color="#F2CA50"
-              speed={0.8}
-              direction="forward"
-              scale={1.0}
-              opacity={0.7}
-              mouseInteractive={true}
-              targetFPS={24}
-              resolutionScale={0.6}
-            />
-          </Suspense>
+          <ClientMountWhenVisible rootMargin="400px">
+            <Suspense fallback={<div className="absolute inset-0 bg-gradient-to-br from-black via-[#1a1510] to-black" />}>
+              <Plasma 
+                color="#F2CA50"
+                speed={0.8}
+                direction="forward"
+                scale={1.0}
+                opacity={0.7}
+                mouseInteractive={true}
+                targetFPS={24}
+                resolutionScale={0.6}
+              />
+            </Suspense>
+          </ClientMountWhenVisible>
         </div>
         
         {/* Dark overlay to tone down the effect */}
