@@ -132,9 +132,9 @@ const Home = () => {
       {/* Hero Section */}
       <section className="relative w-full h-screen min-h-screen flex items-center justify-center">
         {/* Background - Delayed load to not block first paint */}
-        <div className="absolute inset-0 w-full h-full overflow-hidden">
+        <div className="absolute inset-0 w-full h-full overflow-hidden bg-black">
           <ClientMountWhenVisible rootMargin="0px">
-            <Suspense fallback={<div className="absolute inset-0 bg-gradient-to-b from-black via-[#0a0a1a] to-black" />}>
+            <Suspense fallback={<div className="absolute inset-0 bg-black" />}>
               <DarkVeil 
                 speed={1.5}
                 hueShift={202}
@@ -684,9 +684,9 @@ const Home = () => {
       {/* Contact Form & Footer Section */}
       <section id="contact-form" className="relative w-full bg-black py-24 overflow-hidden min-h-screen" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 900px' }}>
         {/* Background - Delayed load until section is visible */}
-        <div className="absolute inset-0 w-full h-full z-0">
+        <div className="absolute inset-0 w-full h-full z-0 bg-black">
           <ClientMountWhenVisible rootMargin="400px">
-            <Suspense fallback={<div className="absolute inset-0 bg-gradient-to-br from-black via-[#1a1510] to-black" />}>
+            <Suspense fallback={<div className="absolute inset-0 bg-black" />}>
               <Plasma 
                 color="#F2CA50"
                 speed={0.8}

@@ -16,11 +16,23 @@
   width: 100% !important;
   height: 100% !important;
   display: block !important;
-  will-change: transform;
+  will-change: transform, opacity;
   transform: translateZ(0);
   backface-visibility: hidden;
   /* Contain painting so it doesn't trigger global reflow */
   contain: paint layout style;
+  /* Fade in animation */
+  opacity: 0;
+  animation: plasma-fade-in 1s ease-out forwards;
+}
+
+@keyframes plasma-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Disable animations for reduced motion */

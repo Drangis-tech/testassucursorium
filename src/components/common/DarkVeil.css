@@ -5,7 +5,7 @@
   width: 100% !important;
   height: 100% !important;
   display: block;
-  will-change: transform;
+  will-change: transform, opacity;
   transform: translateZ(0);
   backface-visibility: hidden;
   object-fit: cover;
@@ -13,6 +13,18 @@
   pointer-events: none;
   /* Contain painting so it doesn't trigger global reflow */
   contain: paint layout style;
+  /* Fade in animation */
+  opacity: 0;
+  animation: darkveil-fade-in 1s ease-out forwards;
+}
+
+@keyframes darkveil-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Disable animations for reduced motion */
