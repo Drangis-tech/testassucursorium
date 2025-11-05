@@ -125,16 +125,10 @@ const ViberButton = ({ isMenuOpen = false }: ViberButtonProps) => {
     }
   }, [isMenuOpen]);
 
-  const handleClick = () => {
-    // Opens Viber chat - works on both web and mobile
-    const phoneNumber = '%2B37065088892'; // Phone number with country code, no + or spaces
-    window.open(`https://viber.click/${phoneNumber}`, '_blank');
-  };
-
   return (
     <a
       ref={buttonRef}
-      onClick={handleClick}
+      href="viber://chat?number=%2B37065088892"
       className="viber-floating-button"
       aria-label="Chat on Viber"
     >
