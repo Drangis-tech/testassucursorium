@@ -872,9 +872,6 @@ const Home = () => {
               <a href="#" className="hover:text-[#F2CA50] transition-colors duration-300">
                 {t('Privatumo politika', 'Privacy Policy')}
               </a>
-              <a href="#" className="hover:text-[#F2CA50] transition-colors duration-300">
-                {t('Sąlygos', 'Terms')}
-              </a>
             </div>
           </motion.div>
         </div>
