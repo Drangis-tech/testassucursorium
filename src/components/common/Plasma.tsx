@@ -113,7 +113,6 @@ export const Plasma: React.FC<PlasmaProps> = ({
   resolutionScale = 1
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const mousePos = useRef({ x: 0, y: 0 });
   const rafRef = useRef<number | null>(null);
   const runningRef = useRef(false);
 
@@ -146,9 +145,6 @@ export const Plasma: React.FC<PlasmaProps> = ({
       
       // Ensure resolution scale maintains minimum quality
       actualResolutionScale = Math.max(actualResolutionScale, 0.3);
-
-      // Disable mouse interaction on mobile for performance
-      const actualMouseInteractive = mobile ? false : mouseInteractive;
 
       const useCustomColor = color ? 1.0 : 0.0;
       const customColorRgb = color ? hexToRgb(color) : [1, 1, 1];
@@ -201,34 +197,11 @@ export const Plasma: React.FC<PlasmaProps> = ({
           uScale: { value: scale },
           uOpacity: { value: opacity },
           uMouse: { value: new Float32Array([0, 0]) },
-          uMouseInteractive: { value: actualMouseInteractive ? 1.0 : 0.0 }
+          uMouseInteractive: { value: 0.0 }
         }
       });
 
       const mesh = new Mesh(gl, { geometry, program });
-
-      // Throttle mouse movement updates
-      let lastMouseUpdate = 0;
-      const mouseUpdateInterval = 50; // Update mouse position max every 50ms
-
-      const handleMouseMove = (e: MouseEvent) => {
-        if (!actualMouseInteractive) return;
-        const now = performance.now();
-        if (now - lastMouseUpdate < mouseUpdateInterval) return;
-        lastMouseUpdate = now;
-        
-        // For fixed positioning, use viewport coordinates directly
-        mousePos.current.x = e.clientX;
-        mousePos.current.y = e.clientY;
-        const mouseUniform = program.uniforms.uMouse.value as Float32Array;
-        mouseUniform[0] = mousePos.current.x;
-        mouseUniform[1] = mousePos.current.y;
-      };
-
-      if (actualMouseInteractive) {
-        // Use window for fixed positioning to track mouse across entire viewport
-        window.addEventListener('mousemove', handleMouseMove, { passive: true });
-      }
 
       // Cache sizes to avoid layout thrash
       // Use viewport dimensions for fixed positioning
@@ -263,9 +236,6 @@ export const Plasma: React.FC<PlasmaProps> = ({
         // Cleanup for static render
         return () => {
           window.removeEventListener('resize', setSize);
-          if (actualMouseInteractive) {
-            window.removeEventListener('mousemove', handleMouseMove);
-          }
           try {
             if (containerRef.current && canvas.parentNode === containerRef.current) {
               containerRef.current.removeChild(canvas);
@@ -363,9 +333,6 @@ export const Plasma: React.FC<PlasmaProps> = ({
         observer.disconnect();
         document.removeEventListener('visibilitychange', onVisibilityChange);
         window.removeEventListener('resize', setSize);
-        if (actualMouseInteractive) {
-          window.removeEventListener('mousemove', handleMouseMove);
-        }
         try {
           if (containerRef.current && canvas.parentNode === containerRef.current) {
             containerRef.current.removeChild(canvas);
