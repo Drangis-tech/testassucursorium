@@ -51,21 +51,19 @@ uniform float uSpeed;
 uniform float uDirection;
 uniform float uScale;
 uniform float uOpacity;
-uniform vec2 uMouse;
-uniform float uMouseInteractive;
+uniform float uMaxIterations;
 out vec4 fragColor;
 
 void mainImage(out vec4 o, vec2 C) {
   vec2 center = iResolution.xy * 0.5;
   C = (C - center) / uScale + center;
   
-  vec2 mouseOffset = (uMouse - center) * 0.0002;
-  C += mouseOffset * length(C - center) * step(0.5, uMouseInteractive);
+  // Mouse interaction removed for performance (always disabled)
   
   float i, d, z, T = iTime * uSpeed * uDirection;
   vec3 O, p, S;
 
-  for (vec2 r = iResolution.xy, Q; ++i < 60.; O += o.w/d*o.xyz) {
+  for (vec2 r = iResolution.xy, Q; ++i < uMaxIterations; O += o.w/d*o.xyz) {
     p = z*normalize(vec3(C-.5*r,r.y)); 
     p.z -= 4.; 
     S = p;
@@ -135,24 +133,32 @@ export const Plasma: React.FC<PlasmaProps> = ({
       const mobile = isMobile();
       const isMobileViewport = window.innerWidth < 768;
       
-      // Resolution scaling for mobile/low-end devices - balanced for quality and performance
+      // Resolution scaling for mobile/low-end devices - more aggressive for performance
       let actualResolutionScale = resolutionScale;
       if (mobile) {
-        actualResolutionScale = resolutionScale * 0.4; // 40% resolution on mobile
+        actualResolutionScale = resolutionScale * 0.35; // 35% resolution on mobile (reduced from 40%)
       } else if (lowEnd) {
-        actualResolutionScale = resolutionScale * 0.6; // 60% on low-end
+        actualResolutionScale = resolutionScale * 0.5; // 50% on low-end (reduced from 60%)
       }
       
       // Ensure resolution scale maintains minimum quality
-      actualResolutionScale = Math.max(actualResolutionScale, 0.3);
+      actualResolutionScale = Math.max(actualResolutionScale, 0.25);
+
+      // Dynamic iteration count - reduce for low-end devices to maintain performance
+      let maxIterations = 60; // Full quality for desktop
+      if (mobile) {
+        maxIterations = 35; // ~42% reduction for mobile
+      } else if (lowEnd) {
+        maxIterations = 45; // ~25% reduction for low-end desktop
+      }
 
       const useCustomColor = color ? 1.0 : 0.0;
       const customColorRgb = color ? hexToRgb(color) : [1, 1, 1];
 
       const directionMultiplier = direction === 'reverse' ? -1.0 : 1.0;
 
-      // Limit DPR more aggressively
-      const maxDPR = mobile ? 1 : (lowEnd ? 1 : 1.5);
+      // Limit DPR - cap at 1 for all devices to reduce GPU load
+      const maxDPR = 1;
 
       const renderer = new Renderer({
         webgl: 2,
@@ -196,8 +202,7 @@ export const Plasma: React.FC<PlasmaProps> = ({
           uDirection: { value: directionMultiplier },
           uScale: { value: scale },
           uOpacity: { value: opacity },
-          uMouse: { value: new Float32Array([0, 0]) },
-          uMouseInteractive: { value: 0.0 }
+          uMaxIterations: { value: maxIterations }
         }
       });
 
@@ -226,7 +231,9 @@ export const Plasma: React.FC<PlasmaProps> = ({
 
       const t0 = performance.now();
       let lastFrameTime = 0;
-      const frameInterval = 1000 / targetFPS;
+      // Adaptive FPS - lower for low-end devices to reduce GPU load
+      const actualTargetFPS = mobile ? Math.min(targetFPS, 18) : (lowEnd ? Math.min(targetFPS, 20) : targetFPS);
+      const frameInterval = 1000 / actualTargetFPS;
 
       // On mobile viewport, render single static frame
       if (isMobileViewport) {
