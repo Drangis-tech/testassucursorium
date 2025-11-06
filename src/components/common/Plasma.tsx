@@ -175,11 +175,12 @@ export const Plasma: React.FC<PlasmaProps> = ({
       
       const canvas = gl.canvas as HTMLCanvasElement;
       canvas.style.display = 'block';
-      canvas.style.width = '100%';
-      canvas.style.height = '100%';
-      canvas.style.position = 'absolute';
+      canvas.style.width = '100vw';
+      canvas.style.height = '100vh';
+      canvas.style.position = 'fixed';
       canvas.style.top = '0';
       canvas.style.left = '0';
+      canvas.style.pointerEvents = 'none';
       
       if (containerRef.current) {
         containerRef.current.appendChild(canvas);
@@ -216,34 +217,38 @@ export const Plasma: React.FC<PlasmaProps> = ({
         if (now - lastMouseUpdate < mouseUpdateInterval) return;
         lastMouseUpdate = now;
         
-        const rect = containerRef.current!.getBoundingClientRect();
-        mousePos.current.x = e.clientX - rect.left;
-        mousePos.current.y = e.clientY - rect.top;
+        // For fixed positioning, use viewport coordinates directly
+        mousePos.current.x = e.clientX;
+        mousePos.current.y = e.clientY;
         const mouseUniform = program.uniforms.uMouse.value as Float32Array;
         mouseUniform[0] = mousePos.current.x;
         mouseUniform[1] = mousePos.current.y;
       };
 
       if (actualMouseInteractive) {
-        containerRef.current.addEventListener('mousemove', handleMouseMove, { passive: true });
+        // Use window for fixed positioning to track mouse across entire viewport
+        window.addEventListener('mousemove', handleMouseMove, { passive: true });
       }
 
       // Cache sizes to avoid layout thrash
+      // Use viewport dimensions for fixed positioning
       let cachedWidth = 0;
       let cachedHeight = 0;
 
       const setSize = () => {
-        const rect = containerRef.current!.getBoundingClientRect();
-        cachedWidth = Math.max(1, Math.floor(rect.width * actualResolutionScale));
-        cachedHeight = Math.max(1, Math.floor(rect.height * actualResolutionScale));
+        // Use viewport dimensions for fixed positioning
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        cachedWidth = Math.max(1, Math.floor(viewportWidth * actualResolutionScale));
+        cachedHeight = Math.max(1, Math.floor(viewportHeight * actualResolutionScale));
         renderer.setSize(cachedWidth, cachedHeight);
         const res = program.uniforms.iResolution.value as Float32Array;
         res[0] = gl.drawingBufferWidth;
         res[1] = gl.drawingBufferHeight;
       };
 
-      const ro = new ResizeObserver(setSize);
-      ro.observe(containerRef.current);
+      // Observe window resize for fixed positioning
+      window.addEventListener('resize', setSize, { passive: true });
       setSize();
 
       const t0 = performance.now();
@@ -257,9 +262,9 @@ export const Plasma: React.FC<PlasmaProps> = ({
         
         // Cleanup for static render
         return () => {
-          ro.disconnect();
-          if (actualMouseInteractive && containerRef.current) {
-            containerRef.current.removeEventListener('mousemove', handleMouseMove);
+          window.removeEventListener('resize', setSize);
+          if (actualMouseInteractive) {
+            window.removeEventListener('mousemove', handleMouseMove);
           }
           try {
             if (containerRef.current && canvas.parentNode === containerRef.current) {
@@ -357,9 +362,9 @@ export const Plasma: React.FC<PlasmaProps> = ({
         stopAnimation();
         observer.disconnect();
         document.removeEventListener('visibilitychange', onVisibilityChange);
-        ro.disconnect();
-        if (actualMouseInteractive && containerRef.current) {
-          containerRef.current.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('resize', setSize);
+        if (actualMouseInteractive) {
+          window.removeEventListener('mousemove', handleMouseMove);
         }
         try {
           if (containerRef.current && canvas.parentNode === containerRef.current) {

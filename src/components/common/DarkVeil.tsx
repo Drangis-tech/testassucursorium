@@ -153,6 +153,15 @@ export default function DarkVeil({
       });
 
       const gl = renderer.gl;
+      
+      // Set canvas styles for fixed positioning
+      canvas.style.position = 'fixed';
+      canvas.style.top = '0';
+      canvas.style.left = '0';
+      canvas.style.width = '100vw';
+      canvas.style.height = '100vh';
+      canvas.style.pointerEvents = 'none';
+      
       const geometry = new Triangle(gl);
       const mobileScale = mobile ? 0.95 : 1.0;
 
@@ -174,14 +183,18 @@ export default function DarkVeil({
       const mesh = new Mesh(gl, { geometry, program });
 
       // Cache sizes to avoid layout thrash
+      // Use viewport dimensions for fixed positioning
       let cachedWidth = 0;
       let cachedHeight = 0;
 
       const resize = () => {
-        cachedWidth = parent.clientWidth;
-        cachedHeight = parent.clientHeight;
-        renderer.setSize(cachedWidth * actualResolutionScale, cachedHeight * actualResolutionScale);
-        program.uniforms.uResolution.value.set(cachedWidth, cachedHeight);
+        // Use viewport dimensions for fixed positioning
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        cachedWidth = Math.max(1, Math.floor(viewportWidth * actualResolutionScale));
+        cachedHeight = Math.max(1, Math.floor(viewportHeight * actualResolutionScale));
+        renderer.setSize(cachedWidth, cachedHeight);
+        program.uniforms.uResolution.value.set(viewportWidth, viewportHeight);
       };
 
       window.addEventListener('resize', resize);

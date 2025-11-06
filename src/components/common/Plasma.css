@@ -10,15 +10,16 @@
 }
 
 .plasma-container canvas {
-  position: absolute !important;
+  position: fixed !important;
   top: 0 !important;
   left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
+  width: 100vw !important;
+  height: 100vh !important;
   display: block !important;
   will-change: transform, opacity;
   transform: translateZ(0);
   backface-visibility: hidden;
+  pointer-events: none !important;
   /* Contain painting so it doesn't trigger global reflow */
   contain: paint layout style;
   /* Fade in animation */

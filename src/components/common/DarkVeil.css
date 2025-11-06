@@ -1,16 +1,16 @@
 .darkveil-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100% !important;
-  height: 100% !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
   display: block;
   will-change: transform, opacity;
   transform: translateZ(0);
   backface-visibility: hidden;
   object-fit: cover;
   touch-action: none;
-  pointer-events: none;
+  pointer-events: none !important;
   /* Contain painting so it doesn't trigger global reflow */
   contain: paint layout style;
   /* Fade in animation */
