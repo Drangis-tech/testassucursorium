@@ -16,10 +16,10 @@ import { Marquee } from '@/components/ui/marquee';
 import aboutImage from '@/assets/about.webp';
 import { Link } from 'react-router-dom';
 import ClientMountWhenVisible from '@/components/common/ClientMountWhenVisible';
+import DecorativeLines from '@/components/common/DecorativeLines';
 
 // Lazy-load heavy WebGL background animations - only load when needed
 const DarkVeil = lazy(() => import('@/components/common/DarkVeil'));
-const Plasma = lazy(() => import('@/components/common/Plasma'));
 
 const FAQCard = memo(({ item, index, language }: { item: any; index: number; language: string }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,13 +35,7 @@ const FAQCard = memo(({ item, index, language }: { item: any; index: number; lan
 
   return (
     <div style={{ position: 'relative', zIndex: 1 }}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: index * 0.05, duration: 0.5 }}
-        style={{ isolation: 'isolate' }}
-      >
+      <div style={{ isolation: 'isolate' }}>
         <Card className="relative h-full overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-sm hover:shadow-xl group backdrop-blur-sm">
           {/* Shine effect on hover */}
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
@@ -103,7 +97,7 @@ const FAQCard = memo(({ item, index, language }: { item: any; index: number; lan
           {/* Decorative corner accent */}
           <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
         </Card>
-      </motion.div>
+      </div>
     </div>
   );
 });
@@ -129,6 +123,9 @@ const Home = () => {
 
   return (
     <div className="overflow-hidden">
+      {/* Decorative Lines - Desktop Only */}
+      <DecorativeLines />
+
       {/* Hero Section */}
       <section className="relative w-full h-screen min-h-screen flex items-center justify-center">
         {/* Background - Delayed load to not block first paint */}
@@ -191,24 +188,12 @@ const Home = () => {
 
 
       {/* Statistics */}
-      <section className="relative w-full bg-black py-24 overflow-hidden" style={{ contentVisibility: 'auto' }}>
-        {/* Background particles effect */}
-        <div className="absolute inset-0">
-          <Particles
-            className="absolute inset-0"
-            quantity={100}
-            ease={80}
-            color="#F2CA50"
-            refresh={false}
-          />
-        </div>
-
-        {/* Gradient overlay for depth */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-black/95 to-black pointer-events-none" />
-
-        <div className="container mx-auto px-4 relative z-10">
-          {/* Stats grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+      <section id="statistics" className="relative w-full py-24 overflow-hidden" style={{ contentVisibility: 'auto', zIndex: 10 }}>
+        {/* Cards container - positioned above the lines */}
+        <div className="relative" style={{ position: 'relative', zIndex: 10 }}>
+          <div className="container mx-auto px-4 relative">
+            {/* Stats grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {stats.map((stat, index) => (
               <motion.div
                 key={stat.id}
@@ -219,7 +204,7 @@ const Home = () => {
                 className="relative group"
               >
                 {/* Card with gradient border effect */}
-                <div className="relative h-full p-6 md:p-8 rounded-2xl bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 backdrop-blur-sm">
+                <div className="relative h-full p-6 md:p-8 rounded-2xl bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300">
                   {/* Shine effect on hover */}
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
@@ -247,6 +232,7 @@ const Home = () => {
                 </div>
               </motion.div>
             ))}
+            </div>
           </div>
         </div>
       </section>
@@ -408,7 +394,7 @@ const Home = () => {
       </section>
 
       {/* Services Carousel Section */}
-      <section className="relative w-full bg-black py-24 overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 600px' }}>
+      <section id="services" className="relative w-full bg-black py-24 overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 600px' }}>
         {/* Background particles effect */}
         <div className="absolute inset-0">
           <Particles
@@ -432,7 +418,7 @@ const Home = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-white leading-tight mb-6">
+            <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-6">
               {t('Mūsų paslaugos', 'Our Services')}
             </h2>
             <p className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto">
@@ -559,66 +545,83 @@ const Home = () => {
           </motion.div>
         </div>
       </section>
-
-      {/* CTA Strip */}
-      <section className="relative w-full bg-black py-16 overflow-hidden" style={{ contentVisibility: 'auto' }}>
-        {/* Background particles effect */}
-        <div className="absolute inset-0">
-          <Particles
-            className="absolute inset-0"
-            quantity={60}
-            ease={80}
-            color="#F2CA50"
-            refresh={false}
-          />
-        </div>
-
-        {/* Gradient overlay for depth */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-black/95 to-black pointer-events-none" />
-
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            style={{ willChange: 'opacity, transform' }}
-            className="relative overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 rounded-2xl p-8 md:p-12 text-center shadow-2xl"
-          >
-            <BorderBeam
-              size={250}
-              duration={15}
-              delay={0.6}
-              colorFrom="#F2CA50"
-              colorTo="#F2CA50"
-              borderWidth={2}
-            />
-            
-            <div className="relative">
-              <h2 className="text-3xl md:text-4xl font-baloo font-bold text-white mb-4">
-                {t('Reikia pagalbos su muitine?', 'Need Help with Customs?')}
+      {/* Border Services Section */}
+      <section id="border-services" className="relative w-full py-24 overflow-hidden" style={{ contentVisibility: 'auto', zIndex: 10 }}>
+        {/* Cards container - positioned above the lines */}
+        <div className="relative" style={{ position: 'relative', zIndex: 10 }}>
+          <div className="container mx-auto px-4 relative">
+            {/* Section Heading */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="flex flex-col items-center mb-16"
+            >
+              <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-6 bg-black relative z-10 inline-block">
+                {t('Paslaugos pasieniuose – 24/7', 'Border Services 24/7')}
               </h2>
-              <p className="text-lg mb-8 text-gray-400">
+              <p className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto text-center bg-black relative z-10 inline-block">
                 {t(
-                  'Susisiekite su mumis ir gaukite profesionalią konsultaciją',
-                  'Contact us and get professional consultation'
+                  'Profesionalūs muitinės įforminimo sprendimai visiems Jūsų poreikiams',
+                  'Professional customs clearance solutions for all your needs'
                 )}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <FlowButton
-                  href="#contact-form"
-                  text={t('Pateikti užklausą', 'Submit Inquiry')}
-                />
-                <FlowButton
-                  href="tel:+37012345678"
-                  variant="outline"
-                  text={t('Skambinti dabar', 'Call Now')}
-                />
-              </div>
+            </motion.div>
+
+            {/* Cards Grid - 4 columns */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+            {services.slice(0, 4).map((service, index) => {
+              const Icon = service.icon;
+              return (
+                <motion.div
+                  key={service.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-50px' }}
+                  transition={{ delay: index * 0.1, duration: 0.6 }}
+                  className="relative group"
+                >
+                  {/* Card with gradient border effect */}
+                  <div className="relative h-full p-6 md:p-8 rounded-2xl bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300">
+                    {/* Shine effect on hover */}
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                    <div className="relative text-center">
+                      {/* Icon */}
+                      <div className="mb-4 flex justify-center">
+                        <div className="w-14 h-14 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                          {service.image ? (
+                            <img src={service.image} alt={service.title[language]} className="h-14 w-14 object-contain" />
+                          ) : Icon ? (
+                            <Icon className="h-14 w-14" style={{ color: '#F1C94F' }} weight="regular" />
+                          ) : null}
+                        </div>
+                      </div>
+
+                      {/* Title */}
+                      <h3 className="text-xl font-baloo font-bold text-white mb-3">
+                        {service.title[language]}
+                      </h3>
+
+                      {/* Description */}
+                      <p className="text-sm text-gray-400 leading-relaxed">
+                        {service.description[language]}
+                      </p>
+                    </div>
+
+                    {/* Decorative corner accent */}
+                    <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                </motion.div>
+              );
+            })}
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
+
+
 
       {/* FAQ Section */}
       <section id="faq" className="relative w-full bg-black py-24 overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 800px' }}>
@@ -648,14 +651,8 @@ const Home = () => {
 
         <div className="container mx-auto px-4 relative z-10">
           {/* Section Heading */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-white leading-tight mb-6">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-6">
               {t('DUK', 'FAQ')}
             </h2>
             <p className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto">
@@ -664,7 +661,7 @@ const Home = () => {
                 'Frequently asked questions about our services'
               )}
             </p>
-          </motion.div>
+          </div>
 
           {/* FAQ Grid */}
           <div className="grid md:grid-cols-2 gap-6 max-w-7xl mx-auto" style={{ isolation: 'isolate' }}>
@@ -682,74 +679,28 @@ const Home = () => {
       </section>
 
       {/* Contact Form & Footer Section */}
-      <section id="contact-form" className="relative w-full bg-black py-24 overflow-hidden min-h-screen" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 900px' }}>
-        {/* Background - Delayed load until section is visible */}
-        <div className="absolute inset-0 w-full h-full z-0 bg-black">
-          <ClientMountWhenVisible rootMargin="400px">
-            <Suspense fallback={<div className="absolute inset-0 bg-black" />}>
-              <Plasma 
-                color="#F2CA50"
-                speed={0.8}
-                direction="forward"
-                scale={1.0}
-                opacity={0.7}
-                mouseInteractive={true}
-                targetFPS={24}
-                resolutionScale={0.6}
-              />
-            </Suspense>
-          </ClientMountWhenVisible>
-        </div>
-        
-        {/* Dark overlay to tone down the effect */}
-        <div className="absolute inset-0 bg-black/40 z-[1]" />
-        
-        {/* Top fade overlay */}
-        <div className="absolute top-0 left-0 right-0 h-32 md:h-48 bg-gradient-to-b from-black to-transparent z-[2] pointer-events-none" />
-
+      <section id="contact-form" className="relative w-full py-24 overflow-hidden" style={{ contentVisibility: 'auto', zIndex: 10 }}>
+        {/* Cards container - positioned above the lines */}
+        <div className="relative" style={{ position: 'relative', zIndex: 10 }}>
         <div className="container mx-auto px-4 relative z-10">
           {/* Section Heading */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-white leading-tight mb-6"
-            >
+          <div className="flex flex-col items-center mb-16">
+            <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-6 bg-black relative z-10 inline-block">
               {t('Susisiekite', 'Contact Us')}
-            </motion.h2>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-              className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto"
-            >
+            </h2>
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto text-center bg-black relative z-10 inline-block">
               {t(
                 'Užpildykite formą ir susisieksime su jumis artimiausiu metu',
                 'Fill out the form and we will contact you soon'
               )}
-            </motion.p>
-          </motion.div>
+            </p>
+          </div>
 
           {/* Two Column Layout: Form + Footer Info */}
           <div className="grid lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
             {/* Left Column - Contact Form */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3, duration: 0.6 }}
-            >
-              <Card className="relative overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-2xl group backdrop-blur-sm h-full">
+            <div>
+              <Card className="relative overflow-hidden bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 group h-full">
                 {/* Shine effect on hover */}
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
@@ -769,17 +720,11 @@ const Home = () => {
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
 
             {/* Right Column - Footer/Contact Info */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              className="flex flex-col justify-between"
-            >
-              <Card className="relative overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-2xl group backdrop-blur-sm h-full">
+            <div className="flex flex-col justify-between">
+              <Card className="relative overflow-hidden bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 group h-full">
                 {/* Shine effect on hover */}
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
@@ -796,12 +741,7 @@ const Home = () => {
                   {/* Top Section - Contact Details */}
                   <div className="space-y-8">
                     {/* Phone */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.5 }}
-                    >
+                    <div>
                       <p className="text-sm text-gray-400 mb-2">{t('Telefonas', 'Phone')}</p>
                       <a 
                         href="tel:+37012345678" 
@@ -809,15 +749,10 @@ const Home = () => {
                       >
                         +370 123 45678
                       </a>
-                    </motion.div>
+                    </div>
 
                     {/* Email */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.6 }}
-                    >
+                    <div>
                       <p className="text-sm text-gray-400 mb-2">{t('El. paštas', 'Email')}</p>
                       <a 
                         href="mailto:info@customsconsulting.lt" 
@@ -825,20 +760,14 @@ const Home = () => {
                       >
                         info@customsconsulting.lt
                       </a>
-                    </motion.div>
+                    </div>
 
                     {/* Divider */}
                     <div className="border-t border-zinc-800/50 pt-44 mt-8">
 
 
                       {/* Working Hours */}
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.8 }}
-                        className="mt-6 p-4 rounded-lg bg-zinc-800/30 border border-zinc-800/50"
-                      >
+                      <div className="mt-6 p-4 rounded-lg bg-zinc-800/30 border border-zinc-800/50">
                         <h4 className="text-sm font-semibold text-white mb-2">
                           {t('Darbo laikas', 'Working Hours')}
                         </h4>
@@ -848,22 +777,16 @@ const Home = () => {
                         <p className="text-xs text-gray-500 mt-1">
                           {t('Skubūs atvejai – 24/7', 'Urgent cases – 24/7')}
                         </p>
-                      </motion.div>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
           </div>
 
           {/* Bottom Footer Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.9 }}
-            className="border-t border-zinc-800/50 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400"
-          >
+          <div className="border-t border-zinc-800/50 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400">
             <div className="text-center md:text-left">
               © {new Date().getFullYear()} UAB "Customs Consulting".{' '}
               {t('Visos teisės saugomos.', 'All rights reserved.')}
@@ -873,7 +796,8 @@ const Home = () => {
                 {t('Privatumo politika', 'Privacy Policy')}
               </a>
             </div>
-          </motion.div>
+          </div>
+        </div>
         </div>
       </section>
 

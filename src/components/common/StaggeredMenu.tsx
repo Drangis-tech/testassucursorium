@@ -89,11 +89,14 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
       preLayerElsRef.current = preLayers;
 
       const offscreen = position === 'left' ? -100 : 100;
-      gsap.set([panel, ...preLayers], { xPercent: offscreen });
-      gsap.set(plusH, { transformOrigin: '50% 50%', rotate: 0 });
-      gsap.set(plusV, { transformOrigin: '50% 50%', rotate: 90 });
-      gsap.set(icon, { rotate: 0, transformOrigin: '50% 50%' });
-      gsap.set(textInner, { yPercent: 0 });
+      gsap.set([panel, ...preLayers], { 
+        xPercent: offscreen,
+        force3D: true
+      });
+      gsap.set(plusH, { transformOrigin: '50% 50%', rotate: 0, force3D: true });
+      gsap.set(plusV, { transformOrigin: '50% 50%', rotate: 90, force3D: true });
+      gsap.set(icon, { rotate: 0, transformOrigin: '50% 50%', force3D: true });
+      gsap.set(textInner, { yPercent: 0, force3D: true });
       if (toggleBtnRef.current) gsap.set(toggleBtnRef.current, { color: menuButtonColor });
     });
     return () => ctx.revert();
@@ -122,22 +125,27 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     const panelStart = Number(gsap.getProperty(panel, 'xPercent'));
 
     if (itemEls.length) {
-      gsap.set(itemEls, { yPercent: 140, rotate: 10 });
+      gsap.set(itemEls, { yPercent: 140, rotate: 10, force3D: true });
     }
     if (numberEls.length) {
       gsap.set(numberEls, { '--sm-num-opacity': 0 });
     }
     if (socialTitle) {
-      gsap.set(socialTitle, { opacity: 0 });
+      gsap.set(socialTitle, { opacity: 0, force3D: true });
     }
     if (socialLinks.length) {
-      gsap.set(socialLinks, { y: 25, opacity: 0 });
+      gsap.set(socialLinks, { y: 25, opacity: 0, force3D: true });
     }
 
     const tl = gsap.timeline({ paused: true });
 
     layerStates.forEach((ls, i) => {
-      tl.fromTo(ls.el, { xPercent: ls.start }, { xPercent: 0, duration: 0.5, ease: 'power4.out' }, i * 0.07);
+      tl.fromTo(
+        ls.el, 
+        { xPercent: ls.start }, 
+        { xPercent: 0, duration: 0.5, ease: 'power4.out', force3D: true }, 
+        i * 0.07
+      );
     });
     const lastTime = layerStates.length ? (layerStates.length - 1) * 0.07 : 0;
     const panelInsertTime = lastTime + (layerStates.length ? 0.08 : 0);
@@ -145,7 +153,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     tl.fromTo(
       panel,
       { xPercent: panelStart },
-      { xPercent: 0, duration: panelDuration, ease: 'power4.out' },
+      { xPercent: 0, duration: panelDuration, ease: 'power4.out', force3D: true },
       panelInsertTime
     );
 
@@ -159,7 +167,8 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           rotate: 0,
           duration: 1,
           ease: 'power4.out',
-          stagger: { each: 0.1, from: 'start' }
+          stagger: { each: 0.1, from: 'start' },
+          force3D: true
         },
         itemsStart
       );
@@ -185,7 +194,8 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           {
             opacity: 1,
             duration: 0.5,
-            ease: 'power2.out'
+            ease: 'power2.out',
+            force3D: true
           },
           socialsStart
         );
@@ -199,6 +209,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
             duration: 0.55,
             ease: 'power3.out',
             stagger: { each: 0.08, from: 'start' },
+            force3D: true,
             onComplete: () => {
               gsap.set(socialLinks, { clearProps: 'opacity' });
             }
@@ -243,10 +254,11 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
       duration: 0.32,
       ease: 'power3.in',
       overwrite: 'auto',
+      force3D: true,
       onComplete: () => {
         const itemEls = Array.from(panel.querySelectorAll('.sm-panel-itemLabel')) as HTMLElement[];
         if (itemEls.length) {
-          gsap.set(itemEls, { yPercent: 140, rotate: 10 });
+          gsap.set(itemEls, { yPercent: 140, rotate: 10, force3D: true });
         }
         const numberEls = Array.from(
           panel.querySelectorAll('.sm-panel-list[data-numbering] .sm-panel-item')
@@ -256,8 +268,8 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
         }
         const socialTitle = panel.querySelector('.sm-socials-title') as HTMLElement | null;
         const socialLinks = Array.from(panel.querySelectorAll('.sm-socials-link')) as HTMLElement[];
-        if (socialTitle) gsap.set(socialTitle, { opacity: 0 });
-        if (socialLinks.length) gsap.set(socialLinks, { y: 25, opacity: 0 });
+        if (socialTitle) gsap.set(socialTitle, { opacity: 0, force3D: true });
+        if (socialLinks.length) gsap.set(socialLinks, { y: 25, opacity: 0, force3D: true });
         busyRef.current = false;
       }
     });
@@ -268,9 +280,21 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     if (!icon) return;
     spinTweenRef.current?.kill();
     if (opening) {
-      spinTweenRef.current = gsap.to(icon, { rotate: 225, duration: 0.8, ease: 'power4.out', overwrite: 'auto' });
+      spinTweenRef.current = gsap.to(icon, { 
+        rotate: 225, 
+        duration: 0.8, 
+        ease: 'power4.out', 
+        overwrite: 'auto',
+        force3D: true
+      });
     } else {
-      spinTweenRef.current = gsap.to(icon, { rotate: 0, duration: 0.35, ease: 'power3.inOut', overwrite: 'auto' });
+      spinTweenRef.current = gsap.to(icon, { 
+        rotate: 0, 
+        duration: 0.35, 
+        ease: 'power3.inOut', 
+        overwrite: 'auto',
+        force3D: true
+      });
     }
   }, []);
 
@@ -323,13 +347,14 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     seq.push(targetLabel);
     setTextLines(seq);
 
-    gsap.set(inner, { yPercent: 0 });
+    gsap.set(inner, { yPercent: 0, force3D: true });
     const lineCount = seq.length;
     const finalShift = ((lineCount - 1) / lineCount) * 100;
     textCycleAnimRef.current = gsap.to(inner, {
       yPercent: -finalShift,
       duration: 0.5 + lineCount * 0.07,
-      ease: 'power4.out'
+      ease: 'power4.out',
+      force3D: true
     });
   }, []);
 

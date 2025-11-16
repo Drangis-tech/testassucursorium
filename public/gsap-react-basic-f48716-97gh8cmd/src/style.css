@@ -1,0 +1,210 @@
+/* Projects */
+.les .bundel {
+  background-color: rgba(242, 242, 242, 0.5);
+  backdrop-filter: blur(4px);
+  padding: 2rem;
+  margin: 0;
+  border-radius: 3rem;
+  /* display: flex;
+  justify-content: space-evenly; */
+}
+
+.les .bundel .img-box {
+  margin: 0;
+  margin-left: 3rem;
+  width: 62.5%;
+}
+
+.les .bundel:nth-child(odd) .img-box {
+  margin: 0;
+  margin-right: 3rem;
+}/* Projects */
+.les .bundel {
+  background-color: rgba(242, 242, 242, 0.5);
+  backdrop-filter: blur(4px);
+  padding: 2rem;
+  margin: 0;
+  border-radius: 3rem;
+  /* display: flex;
+  justify-content: space-evenly; */
+}
+
+.les .bundel .img-box {
+  margin: 0;
+  margin-left: 3rem;
+  width: 62.5%;
+}
+
+.les .bundel:nth-child(odd) .img-box {
+  margin: 0;
+  margin-right: 3rem;
+}
+
+.les .bundel .text-box {
+  width: 37.5%;
+}
+
+.les .bundel .accordion {
+  width: 100%;
+}
+
+.les img {
+  border-radius: 2rem;
+}
+
+.les button {
+  width: auto !important;
+}
+
+.les .bundle button {
+  position: absolute;
+  z-index: 1;
+}
+
+.les button.accordion-button {
+  width: 100% !important;
+}
+
+.les button svg {
+  margin-left: 10px;
+  width: 22px;
+}
+
+@media screen and (max-width: 768px) {
+  .les .bundel .img-box {
+      width: 60%;
+  }
+
+  .les .bundel .text-box {
+      width: 40%;
+  }
+}
+
+/* 
+@media screen and (max-width: 768px) {
+  .les .bundel {
+      display: block;
+  }
+  .les .bundel .img-box, .les .bundel .text-box, .les .bundel .accordion {
+      margin-top: 2rem;
+      width: 100%;
+  }
+  .les .bundel:nth-child(odd) .img-box,    
+  .les .bundel:nth-child(odd) .accordion {
+      margin: 0;
+  }
+}  */
+
+svg.squiggle-les {
+  /* position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 180vw; */
+  z-index: -1;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  /* height: 100vw; */
+  height: 100%;
+}
+
+svg.squiggle-les path {
+  stroke-width: 0.5rem;
+  stroke: #004a7c;
+}
+
+@media screen and (max-width: 992px) {
+  svg.squiggle-les {
+      /* height: 200vw; */
+  }
+}
+
+@media screen and (max-width: 768px) {
+  svg.squiggle-les {
+      /* height: 300vw; */
+  }
+}
+
+@media screen and (max-width: 576px) {
+  svg.squiggle-les {
+      display: none;
+  }
+}
+
+.les .bundel .text-box {
+  width: 37.5%;
+}
+
+.les .bundel .accordion {
+  width: 100%;
+}
+
+.les img {
+  border-radius: 2rem;
+}
+
+.les button {
+  width: auto !important;
+}
+
+.les .bundle button {
+  position: absolute;
+  z-index: 1;
+}
+
+.les button.accordion-button {
+  width: 100% !important;
+}
+
+.les button svg {
+  margin-left: 10px;
+  width: 22px;
+}
+
+@media screen and (max-width: 768px) {
+  .les .bundel .img-box {
+    width: 60%;
+  }
+
+  .les .bundel .text-box {
+    width: 40%;
+  }
+}
+
+svg.squiggle-les {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* width: 100vw;
+  height: 180vw; */
+  z-index: -1;
+}
+
+svg.squiggle-les path {
+  stroke-width: 0.5rem;
+}
+
+@media screen and (max-width: 992px) {
+  svg.squiggle-les {
+    height: 200vw;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  svg.squiggle-les {
+    height: 300vw;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  svg.squiggle-les {
+    display: none;
+  }
+}
+
+/* Footer */
+footer {
+  background-color: blue;
+}
