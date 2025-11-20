@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import logo from '@/assets/logo.png';
 import StaggeredMenu, { type StaggeredMenuItem } from './StaggeredMenu';
@@ -10,6 +10,7 @@ interface HeaderProps {
 const Header = ({ onMenuToggle }: HeaderProps) => {
   const { language, t } = useLanguage();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const basePath = language === 'lt' ? '' : '/' + language;
 
@@ -61,9 +62,9 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
     const pathWithoutLang = currentPath.replace(/^\/(en|ru|pl)/, '');
     
     if (targetLang === 'lt') {
-      window.location.href = pathWithoutLang || '/';
+      navigate(pathWithoutLang || '/');
     } else {
-      window.location.href = `/${targetLang}${pathWithoutLang}`;
+      navigate(`/${targetLang}${pathWithoutLang}`);
     }
   };
 

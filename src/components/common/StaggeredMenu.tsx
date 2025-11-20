@@ -1,6 +1,6 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { CaretDown } from '@phosphor-icons/react';
 import './StaggeredMenu.css';
 
@@ -58,6 +58,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   onMenuClose,
   alwaysShowLogo = false
 }: StaggeredMenuProps) => {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const openRef = useRef(false);
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -562,7 +563,15 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                                         }
                                       } else {
                                         // If different page, navigate then scroll
-                                        window.location.href = child.link;
+                                        navigate(child.link);
+                                        // We need to wait for navigation to complete and element to mount
+                                        // This is a simple attempt, for robust solution use useEffect with location.hash
+                                        setTimeout(() => {
+                                            const element = document.getElementById(hash);
+                                            if (element) {
+                                                element.scrollIntoView({ behavior: 'smooth' });
+                                            }
+                                        }, 100);
                                       }
                                     }}
                                   >
