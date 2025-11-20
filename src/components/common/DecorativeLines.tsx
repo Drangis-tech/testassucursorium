@@ -11,22 +11,10 @@ const CONNECTIONS = [
   { id: 'contact-form', x: 32, color: '#F2CA50', type: 'heading-to-cards-contact', headingId: 'contact-heading' },   // Bottommost (Outer)
 ];
 
-interface Connection {
-    id: string;
-    x: number;
-    color: string;
-    type?: string;
-    headingId?: string;
-    crossThrough?: boolean; // Keep for backward compatibility if needed, though type handles it
-}
-
 export default function DecorativeLines() {
   const [paths, setPaths] = useState<string[]>([]);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const wrapperRef = useRef<HTMLDivElement>(null);
-
-  // Add intersection observer refs
-  const observedElements = useRef<Set<string>>(new Set());
 
   const updateLines = useCallback(() => {
     if (!wrapperRef.current) return;
