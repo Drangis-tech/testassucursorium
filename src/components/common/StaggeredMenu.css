@@ -366,5 +366,9 @@
     left: 0;
     right: 0;
   }
+
+  .sm-panel-item {
+    font-size: 2.5rem;
+  }
 }
 

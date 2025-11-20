@@ -232,7 +232,7 @@ const Home = () => {
                 alt="Customs Consulting Logo" 
                 className="hidden [@media(min-width:1470px)]:block h-[32px] xl:h-[38px] 2xl:h-[45px] w-auto object-contain flex-shrink-0"
               />
-              <p className="text-[20px] sm:text-[22px] md:text-[24px] lg:text-[26px] xl:text-[32px] 2xl:text-[38px] [@media(min-width:1800px)]:text-[45px] text-muted-foreground tracking-wide leading-tight">
+              <p className="text-[18px] sm:text-[20px] md:text-[24px] lg:text-[26px] xl:text-[32px] 2xl:text-[38px] [@media(min-width:1800px)]:text-[45px] text-muted-foreground tracking-wide leading-tight">
                 CUSTOMS CONSULTING
               </p>
             </motion.div>
@@ -242,7 +242,7 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-[32px] sm:text-[36px] md:text-[42px] lg:text-[46px] xl:text-[56px] 2xl:text-[64px] [@media(min-width:1800px)]:text-[72px] font-baloo font-bold leading-[1.2] sm:leading-[1.25] md:leading-[1.3] text-left mb-8 sm:mb-10 md:mb-12 lg:mb-14 xl:mb-16"
+              className="text-[28px] sm:text-[32px] md:text-[42px] lg:text-[46px] xl:text-[56px] 2xl:text-[64px] [@media(min-width:1800px)]:text-[72px] font-baloo font-bold leading-[1.2] sm:leading-[1.25] md:leading-[1.3] text-left mb-8 sm:mb-10 md:mb-12 lg:mb-14 xl:mb-16"
             >
               {t(
                 'Patikimas ir profesionalus atstovavimas muitinėje – sklandžiai, tiksliai ir pagal kiekvieno kliento poreikius.',
