@@ -11,32 +11,46 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
   const { language, t } = useLanguage();
   const location = useLocation();
 
-  const basePath = language === 'en' ? '/en' : '';
+  const basePath = language === 'lt' ? '' : '/' + language;
 
   const menuItems: StaggeredMenuItem[] = [
     {
-      label: t('Pagrindinis', 'Home'),
-      ariaLabel: t('Eiti į pagrindinį puslapį', 'Go to home page'),
+      label: t('Pagrindinis', 'Home', 'Strona główna', 'Главная'),
+      ariaLabel: t('Eiti į pagrindinį puslapį', 'Go to home page', 'Przejdź do strony głównej', 'Перейти на главную страницу'),
       link: basePath + '/',
     },
     {
-      label: t('Apie mus', 'About Us'),
-      ariaLabel: t('Sužinoti apie mus', 'Learn about us'),
+      label: t('Apie mus', 'About Us', 'O nas', 'О нас'),
+      ariaLabel: t('Sužinoti apie mus', 'Learn about us', 'Dowiedz się o nas', 'Узнать о нас'),
       link: (basePath || '') + '/#about',
     },
     {
-      label: t('Paslaugos', 'Services'),
-      ariaLabel: t('Peržiūrėti paslaugas', 'View our services'),
+      label: t('Paslaugos', 'Services', 'Usługi', 'Услуги'),
+      ariaLabel: t('Peržiūrėti paslaugas', 'View our services', 'Zobacz nasze usługi', 'Посмотреть наши услуги'),
       link: basePath + '/services',
+      children: [
+        {
+          label: t('Vidinėse muitinėse', 'Internal Customs', 'Wewnętrzne urzędy celne', 'Во внутренних таможнях'),
+          link: (basePath || '') + '/#services'
+        },
+        {
+          label: t('Pasieniuose', 'At Borders', 'Na granicach', 'На границах'),
+          link: (basePath || '') + '/#border-services'
+        },
+        {
+          label: t('Visos', 'All', 'Wszystkie', 'Все'),
+          link: (basePath || '') + '/services'
+        }
+      ]
     },
     {
-      label: t('DUK', 'FAQ'),
-      ariaLabel: t('Dažniausiai užduodami klausimai', 'Frequently asked questions'),
+      label: t('DUK', 'FAQ', 'FAQ', 'FAQ'),
+      ariaLabel: t('Dažniausiai užduodami klausimai', 'Frequently asked questions', 'Często zadawane pytania', 'Часто задаваемые вопросы'),
       link: (basePath || '') + '/#faq',
     },
     {
-      label: t('Kontaktai', 'Contacts'),
-      ariaLabel: t('Susisiekite su mumis', 'Contact us'),
+      label: t('Kontaktai', 'Contacts', 'Kontakt', 'Контакты'),
+      ariaLabel: t('Susisiekite su mumis', 'Contact us', 'Skontaktuj się z nami', 'Свяжитесь с нами'),
       link: (basePath || '') + '/#contact-form',
     },
   ];
@@ -84,6 +98,8 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
     }
   };
 
+  const isServicesPage = location.pathname.includes('services');
+
   return (
     <div 
       className="fixed top-0 left-0 w-full z-50"
@@ -105,6 +121,7 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
         currentLanguage={language}
         onMenuOpen={() => onMenuToggle?.(true)}
         onMenuClose={() => onMenuToggle?.(false)}
+        alwaysShowLogo={isServicesPage}
       />
     </div>
   );

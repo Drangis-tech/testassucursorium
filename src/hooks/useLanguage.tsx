@@ -2,21 +2,31 @@ import { createContext, useContext } from 'react';
 import type { ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 
-export type Language = 'lt' | 'en';
+export type Language = 'lt' | 'en' | 'pl' | 'ru';
 
 interface LanguageContextValue {
   language: Language;
-  t: (ltText: string, enText: string) => string;
+  t: (ltText: string, enText: string, plText?: string, ruText?: string) => string;
 }
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
-  const language: Language = location.pathname.startsWith('/en') ? 'en' : 'lt';
+  const getLanguage = (): Language => {
+    if (location.pathname.startsWith('/en')) return 'en';
+    if (location.pathname.startsWith('/pl')) return 'pl';
+    if (location.pathname.startsWith('/ru')) return 'ru';
+    return 'lt';
+  };
 
-  const t = (ltText: string, enText: string) => {
-    return language === 'lt' ? ltText : enText;
+  const language: Language = getLanguage();
+
+  const t = (ltText: string, enText: string, plText?: string, ruText?: string) => {
+    if (language === 'en') return enText;
+    if (language === 'pl') return plText || enText || ltText;
+    if (language === 'ru') return ruText || enText || ltText;
+    return ltText;
   };
 
   return (

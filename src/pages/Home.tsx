@@ -1,5 +1,5 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState, memo, useCallback, useEffect, lazy, Suspense } from 'react';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { useState, memo, useCallback, useEffect, lazy, Suspense, useRef } from 'react';
 import { CheckCircle, CaretDown } from '@phosphor-icons/react';
 import { FlowButton } from '@/components/ui/flow-button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,18 +8,89 @@ import { NumberTicker } from '@/components/ui/number-ticker';
 import { Particles } from '@/components/ui/particles';
 import { DotPattern } from '@/components/ui/dot-pattern';
 import { BorderBeam } from '@/components/ui/border-beam';
+import { LineShadowText } from '@/components/ui/line-shadow-text';
 import { useLanguage } from '@/hooks/useLanguage';
 import { stats } from '@/lib/stats';
 import { faqItems } from '@/lib/faq';
 import { services } from '@/lib/services';
+import { borderServices } from '@/lib/borderServices';
 import { Marquee } from '@/components/ui/marquee';
 import aboutImage from '@/assets/about.webp';
+import logo from '@/assets/logo.png';
 import { Link } from 'react-router-dom';
 import ClientMountWhenVisible from '@/components/common/ClientMountWhenVisible';
 import DecorativeLines from '@/components/common/DecorativeLines';
 
 // Lazy-load heavy WebGL background animations - only load when needed
 const DarkVeil = lazy(() => import('@/components/common/DarkVeil'));
+
+// Custom hook to detect large screens
+const useIsLargeScreen = () => {
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsLargeScreen(window.innerWidth > 1470);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  return isLargeScreen;
+};
+
+// Component wrapper for cards with permanent hover effect on large screens
+const AnimatedCard = ({ 
+  children, 
+  index = 0, 
+  delay = 0,
+  className = ''
+}: { 
+  children: React.ReactNode; 
+  index?: number; 
+  delay?: number;
+  className?: string;
+}) => {
+  const isLargeScreen = useIsLargeScreen();
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: '-50px' });
+  const [showHoverEffect, setShowHoverEffect] = useState(false);
+
+  useEffect(() => {
+    if (isLargeScreen && isInView) {
+      // Calculate timing for hover effect to activate
+      const timing = (delay + index * 0.1) * 1000;
+      
+      const timer = setTimeout(() => {
+        setShowHoverEffect(true);
+        // Keep the hover effect active permanently
+      }, timing);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isLargeScreen, isInView, delay, index]);
+
+  const motionProps = isLargeScreen
+    ? { initial: { opacity: 1, y: 0 }, animate: { opacity: 1, y: 0 } }
+    : { 
+        initial: { opacity: 0, y: 30 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true, margin: '-50px' },
+        transition: { delay: delay + index * 0.1, duration: 0.6 }
+      };
+
+  return (
+    <motion.div
+      ref={ref}
+      {...motionProps}
+      className={`${className} ${isLargeScreen && showHoverEffect ? 'force-hover-active' : ''}`}
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 const FAQCard = memo(({ item, index, language }: { item: any; index: number; language: string }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -122,12 +193,12 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="overflow-hidden">
+    <div className="relative overflow-hidden m-0 p-0">
       {/* Decorative Lines - Desktop Only */}
       <DecorativeLines />
 
       {/* Hero Section */}
-      <section className="relative w-full h-screen min-h-screen flex items-center justify-center">
+      <section className="relative w-full min-h-screen flex items-center justify-center py-20 sm:py-24 md:py-0">
         {/* Background - Delayed load to not block first paint */}
         <div className="absolute inset-0 w-full h-full overflow-hidden bg-black">
           <ClientMountWhenVisible rootMargin="0px">
@@ -147,37 +218,50 @@ const Home = () => {
         </div>
 
         {/* Content */}
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="w-full">
+        <div className="w-full relative z-10 flex justify-center items-center">
+          <div className="w-full max-w-[95%] sm:max-w-[90%] md:max-w-[85%] lg:max-w-[80%] xl:max-w-[85%] 2xl:max-w-[80%] px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 mx-auto">
+            {/* Logo + Company Name */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="mb-6 md:mb-12 text-left"
+              className="mb-6 sm:mb-8 md:mb-10 lg:mb-12 text-left flex items-center gap-3 sm:gap-4"
             >
-              <p className="text-[21px] sm:text-2xl md:text-[30px] lg:text-4xl xl:text-[45px] text-muted-foreground">
-                Customs Consulting
+              <img 
+                src={logo} 
+                alt="Customs Consulting Logo" 
+                className="hidden [@media(min-width:1470px)]:block h-[32px] xl:h-[38px] 2xl:h-[45px] w-auto object-contain flex-shrink-0"
+              />
+              <p className="text-[16px] sm:text-[18px] md:text-[22px] lg:text-[26px] xl:text-[32px] 2xl:text-[38px] [@media(min-width:1800px)]:text-[45px] text-muted-foreground tracking-wide leading-tight">
+                CUSTOMS CONSULTING
               </p>
             </motion.div>
 
+            {/* Main Heading */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-[42px] sm:text-5xl md:text-6xl lg:text-7xl xl:text-[90px] font-baloo font-bold leading-tight text-left mb-8 md:mb-12 lg:mb-16"
+              className="text-[22px] sm:text-28px] md:text-[36px] lg:text-[46px] xl:text-[56px] 2xl:text-[64px] [@media(min-width:1800px)]:text-[72px] font-baloo font-bold leading-[1.2] sm:leading-[1.25] md:leading-[1.3] text-left mb-8 sm:mb-10 md:mb-12 lg:mb-14 xl:mb-16"
             >
-              Mes užtikriname sklandų, tikslų ir teisės aktus atitinkantį krovinių įforminimą bei atstovavimą muitinėje.
+              {t(
+                'Patikimas ir profesionalus atstovavimas muitinėje – sklandžiai, tiksliai ir pagal kiekvieno kliento poreikius.',
+                'Reliable and professional customs representation – smooth, accurate, and tailored to each client\'s needs.',
+                'Niezawodna i profesjonalna reprezentacja w urzędzie celnym – sprawnie, dokładnie i zgodnie z potrzebami każdego klienta.',
+                'Надежное и профессиональное представительство на таможне – гладко, точно и в соответствии с потребностями каждого клиента.'
+              )}
             </motion.h1>
 
+            {/* CTA Button */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-center md:text-left"
+              className="text-left"
             >
               <FlowButton
                 href="#contact-form"
-                text="Susisiekite"
+                text={t('Susisiekite', 'Contact Us', 'Skontaktuj się', 'Свяжитесь')}
                 size="large"
               />
             </motion.div>
@@ -193,44 +277,54 @@ const Home = () => {
         <div className="relative" style={{ position: 'relative', zIndex: 10 }}>
           <div className="container mx-auto px-4 relative">
             {/* Stats grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 xl:gap-8">
             {stats.map((stat, index) => (
-              <motion.div
+              <AnimatedCard
                 key={stat.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-                className="relative group"
+                index={index}
+                delay={0}
+                className="relative"
               >
-                {/* Card with gradient border effect */}
-                <div className="relative h-full p-6 md:p-8 rounded-2xl bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300">
-                  {/* Shine effect on hover */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="relative group">
+                  {/* Card with gradient border effect */}
+                  <div className="relative h-full p-6 md:p-8 rounded-2xl bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300">
+                    {/* Shine effect on hover */}
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                  <div className="relative text-center">
-                    {/* Animated number */}
-                    <div className="font-baloo font-bold mb-3">
-                      <div className="text-4xl md:text-5xl bg-gradient-to-br from-[#F2CA50] via-[#F2CA50] to-[#F2CA50] bg-clip-text text-transparent flex items-center justify-center gap-1">
-                        {stat.prefix && <span className="text-3xl md:text-4xl">{stat.prefix}</span>}
-                        <NumberTicker
-                          value={stat.value}
-                          className="inline-block tabular-nums"
-                        />
-                        {stat.suffix && <span className="text-3xl md:text-4xl">{stat.suffix}</span>}
+                    <div className="relative text-center">
+                      {/* Animated number */}
+                      <div className="font-baloo font-bold mb-3">
+                        <div className="text-4xl md:text-5xl flex items-center justify-center gap-1">
+                          {stat.prefix && (
+                            <span className="text-3xl md:text-4xl text-[#F2CA50]">
+                              {stat.prefix}
+                            </span>
+                          )}
+                          <div className="bg-gradient-to-br from-[#F2CA50] via-[#F2CA50] to-[#F2CA50] bg-clip-text text-transparent">
+                            <NumberTicker
+                              value={stat.value}
+                              className="inline-block tabular-nums"
+                            />
+                          </div>
+                          {stat.suffix && (
+                            <span className="text-3xl md:text-4xl text-[#F2CA50]">
+                              {stat.suffix}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Label */}
+                      <div className="text-xs md:text-sm text-gray-400 leading-relaxed mt-2">
+                        {stat.label[language]}
                       </div>
                     </div>
 
-                    {/* Label */}
-                    <div className="text-xs md:text-sm text-gray-400 leading-relaxed mt-2">
-                      {stat.label[language]}
-                    </div>
+                    {/* Decorative corner accent */}
+                    <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
-
-                  {/* Decorative corner accent */}
-                  <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
-              </motion.div>
+              </AnimatedCard>
             ))}
             </div>
           </div>
@@ -280,7 +374,7 @@ const Home = () => {
                 transition={{ delay: 0.2 }}
                 className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-white leading-tight mb-6"
               >
-                {t('Apie mus', 'About Us')}
+                {t('Apie mus', 'About Us', 'O nas', 'О нас')}
               </motion.h2>
 
               {/* Subheading */}
@@ -292,8 +386,10 @@ const Home = () => {
                 className="text-lg sm:text-xl md:text-2xl lg:text-[30px] text-gray-400 leading-relaxed max-w-xl lg:mb-auto"
               >
                 {t(
-                  'Profesionalūs muitinės įforminimo sprendimai su aiškiu procesu ir garantuotais rezultatais.',
-                  'Professional customs clearance solutions with a clear process and guaranteed results.'
+                  'Profesionalūs ir patikimi muitinės tarpininkai Europoje ir Azijoje. Teikiame kvalifikuotas krovinių deklaravimo ir muitinės procedūrų paslaugas, užtikrindami greitą ir tikslų aptarnavimą.',
+                  'Professional customs clearance solutions with a clear process and guaranteed results.',
+                  'Profesjonalni i niezawodni agenci celni w Europie i Azji. Świadczymy wykwalifikowane usługi w zakresie deklarowania ładunków i procedur celnych, zapewniając szybką i dokładną obsługę.',
+                  'Профессиональные и надежные таможенные брокеры в Европе и Азии. Мы предоставляем квалифицированные услуги по декларированию грузов и таможенным процедурам, обеспечивая быстрое и точное обслуживание.'
                 )}
               </motion.p>
             </motion.div>
@@ -328,16 +424,14 @@ const Home = () => {
             </motion.div>
 
             {/* Card - Order 3 on mobile, with spacing above it */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
+            <AnimatedCard
+              delay={0.4}
               className="order-3 lg:order-2 mt-6 lg:mt-auto lg:col-start-2"
             >
-              <Card className="relative overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-lg hover:shadow-xl backdrop-blur-sm">
-                {/* Shine effect on hover */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div id="about-card" className="relative group">
+                <Card className="relative overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-lg hover:shadow-xl backdrop-blur-sm">
+                  {/* Shine effect on hover */}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
                 <BorderBeam
                   size={200}
@@ -359,36 +453,42 @@ const Home = () => {
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <h3 className="text-xl md:text-2xl font-baloo font-bold text-white mb-3">
-                        {t('Patikimas rezultatas', 'Reliable Results')}
+                        {t('Patikimas rezultatas', 'Reliable Results', 'Niezawodny wynik', 'Надежный результат')}
                       </h3>
                       
                       {/* Main Stat */}
                       <div className="flex flex-wrap items-baseline gap-2 mb-6">
                         <span className="text-3xl md:text-4xl font-baloo font-bold bg-gradient-to-br from-[#F2CA50] to-[#F2CA50] bg-clip-text text-transparent">
-                          2,847
+                          15+ 
                         </span>
                         <span className="text-sm md:text-base text-gray-400">
-                          {t('deklaracijos per metus', 'declarations per year')}
+                          {t('metų patirties', 'years of experience', 'lat doświadczenia', 'лет опыта')}
                         </span>
                       </div>
                       
                       {/* Divider */}
                       <div className="border-t border-zinc-800/50 mb-6"></div>
                       
-                      <p className="text-sm md:text-base text-gray-400 leading-relaxed">
-                        {t(
-                          'Užtikriname greitą ir profesionalų krovinių muitinės įforminimą su 12+ metų patirtimi tarptautinės prekybos srityje.',
-                          'We ensure fast and professional cargo customs clearance with 12+ years of experience in international trade.'
-                        )}
-                      </p>
+                      <p
+                        className="text-sm md:text-base text-gray-400 leading-relaxed"
+                        dangerouslySetInnerHTML={{
+                          __html: t(
+                            'Lanksčiai prisitaikome prie skirtingų klientų poreikių ir užtikriname sprendimus, atitinkančius visus teisės aktų reikalavimus.<br /><br />Galime pasiūlyti profesionalius ir patogius sprendimus kiekvienai situacijai, o mūsų tikslas – užtikrinti sklandų ir teisės aktus atitinkantį krovinių įforminimą bei patikimą atstovavimą muitinėje.<br /><br />',
+                            'We ensure fast and professional cargo customs clearance with 12+ years of experience in international trade.',
+                            'Elastycznie dostosowujemy się do różnych potrzeb klientów i zapewniamy rozwiązania zgodne ze wszystkimi wymogami prawnymi.<br /><br />Możemy zaoferować profesjonalne i wygodne rozwiązania w każdej sytuacji, a naszym celem jest zapewnienie sprawnej i zgodnej z prawem odprawy ładunków oraz rzetelna reprezentacja w urzędzie celnym.<br /><br />',
+                            'Мы гибко адаптируемся к различным потребностям клиентов и предоставляем решения, соответствующие всем законодательным требованиям.<br /><br />Мы можем предложить профессиональные и удобные решения для любой ситуации, а наша цель — обеспечить бесперебойное и законное оформление грузов и надежное представительство на таможне.<br /><br />'
+                          )
+                        }}
+                      />
                     </div>
                   </div>
                 </CardContent>
                 
-                {/* Decorative corner accent */}
-                <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </Card>
-            </motion.div>
+                  {/* Decorative corner accent */}
+                  <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </Card>
+              </div>
+            </AnimatedCard>
           </div>
         </div>
       </section>
@@ -416,15 +516,17 @@ const Home = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="flex flex-col items-center mb-16"
           >
-            <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-6">
-              {t('Mūsų paslaugos', 'Our Services')}
+            <h2 id="services-heading" className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-6 bg-black relative z-10 inline-block flex items-center justify-center">
+              {t('Paslaugos vidinėse muitinėse', 'Our Services', 'Usługi w wewnętrznych urzędach celnych', 'Услуги во внутренних таможнях')}
             </h2>
             <p className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto">
               {t(
                 'Profesionalūs muitinės įforminimo sprendimai visiems Jūsų poreikiams',
-                'Professional customs clearance solutions for all your needs'
+                'Professional customs clearance solutions for all your needs',
+                'Profesjonalne rozwiązania odprawy celnej dla wszystkich Twoich potrzeb',
+                'Профессиональные решения по таможенному оформлению для всех ваших нужд'
               )}
             </p>
           </motion.div>
@@ -443,18 +545,18 @@ const Home = () => {
                   <Link
                     key={service.id}
                     to={language === 'en' ? '/en/services' : '/services'}
-                    className="block"
+                    className="block service-card-link"
                   >
                     <Card
-                      className="relative w-[280px] sm:w-[320px] md:w-[380px] h-[280px] overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-lg hover:shadow-xl group cursor-pointer backdrop-blur-sm"
+                      className="relative w-[280px] sm:w-[320px] md:w-[380px] h-[280px] overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer backdrop-blur-sm"
                     >
                       {/* Shine effect on hover */}
-                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="service-card-shine absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 transition-opacity duration-300" />
                       
                       <CardContent className="p-6 relative">
                         {/* Icon */}
                         <div className="mb-4">
-                          <div className="w-14 h-14 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                          <div className="service-card-icon w-14 h-14 flex items-center justify-center transition-transform duration-300">
                             {service.image ? (
                               <img src={service.image} alt={service.title[language]} className="h-14 w-14 object-contain" />
                             ) : Icon ? (
@@ -474,7 +576,7 @@ const Home = () => {
                         </p>
 
                         {/* Decorative corner accent */}
-                        <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="service-card-corner absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 transition-opacity duration-300" />
                       </CardContent>
                     </Card>
                   </Link>
@@ -490,18 +592,18 @@ const Home = () => {
                   <Link
                     key={service.id}
                     to={language === 'en' ? '/en/services' : '/services'}
-                    className="block"
+                    className="block service-card-link"
                   >
                     <Card
-                      className="relative w-[280px] sm:w-[320px] md:w-[380px] h-[280px] overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-lg hover:shadow-xl group cursor-pointer backdrop-blur-sm"
+                      className="relative w-[280px] sm:w-[320px] md:w-[380px] h-[280px] overflow-hidden bg-gradient-to-br from-zinc-900/80 to-black/80 border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer backdrop-blur-sm"
                     >
                       {/* Shine effect on hover */}
-                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="service-card-shine absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 transition-opacity duration-300" />
                       
                       <CardContent className="p-6 relative">
                         {/* Icon */}
                         <div className="mb-4">
-                          <div className="w-14 h-14 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                          <div className="service-card-icon w-14 h-14 flex items-center justify-center transition-transform duration-300">
                             {service.image ? (
                               <img src={service.image} alt={service.title[language]} className="h-14 w-14 object-contain" />
                             ) : Icon ? (
@@ -521,7 +623,7 @@ const Home = () => {
                         </p>
 
                         {/* Decorative corner accent */}
-                        <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="service-card-corner absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 transition-opacity duration-300" />
                       </CardContent>
                     </Card>
                   </Link>
@@ -540,7 +642,7 @@ const Home = () => {
           >
             <FlowButton
               href={language === 'en' ? '/en/services' : '/services'}
-              text={t('Visos paslaugos', 'All Services')}
+              text={t('Visos paslaugos', 'All Services', 'Wszystkie usługi', 'Все услуги')}
             />
           </motion.div>
         </div>
@@ -558,62 +660,66 @@ const Home = () => {
               transition={{ duration: 0.6 }}
               className="flex flex-col items-center mb-16"
             >
-              <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-6 bg-black relative z-10 inline-block">
-                {t('Paslaugos pasieniuose – 24/7', 'Border Services 24/7')}
-              </h2>
+            <h2 id="border-services-heading" className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-6 bg-black relative z-10 inline-block flex items-center justify-center -mt-3">
+              {t('Paslaugos pasieniuose – ', 'Border Services ', 'Usługi na granicy – ', 'Услуги на границе – ')}
+              <LineShadowText 
+                shadowColor="#F2CA50" 
+                as="span" 
+                className="text-[#F2CA50] text-6xl sm:text-7xl md:text-8xl lg:text-[110px] inline-flex items-center italic"
+              >
+                24/7
+              </LineShadowText>
+            </h2>
               <p className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto text-center bg-black relative z-10 inline-block">
                 {t(
                   'Profesionalūs muitinės įforminimo sprendimai visiems Jūsų poreikiams',
-                  'Professional customs clearance solutions for all your needs'
+                  'Professional customs clearance solutions for all your needs',
+                  'Profesjonalne rozwiązania odprawy celnej dla wszystkich Twoich potrzeb',
+                  'Профессиональные решения по таможенному оформлению для всех ваших нужд'
                 )}
               </p>
             </motion.div>
 
             {/* Cards Grid - 4 columns */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-            {services.slice(0, 4).map((service, index) => {
+            {borderServices.map((service, index) => {
               const Icon = service.icon;
               return (
-                <motion.div
+                <AnimatedCard
                   key={service.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-50px' }}
-                  transition={{ delay: index * 0.1, duration: 0.6 }}
-                  className="relative group"
+                  index={index}
+                  delay={0}
+                  className="relative h-full"
                 >
-                  {/* Card with gradient border effect */}
-                  <div className="relative h-full p-6 md:p-8 rounded-2xl bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300">
-                    {/* Shine effect on hover */}
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="relative group h-full">
+                    {/* Card with gradient border effect */}
+                    <div className="relative h-full p-6 md:p-8 rounded-2xl bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 flex flex-col">
+                      {/* Shine effect on hover */}
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                    <div className="relative text-center">
-                      {/* Icon */}
-                      <div className="mb-4 flex justify-center">
-                        <div className="w-14 h-14 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                          {service.image ? (
-                            <img src={service.image} alt={service.title[language]} className="h-14 w-14 object-contain" />
-                          ) : Icon ? (
-                            <Icon className="h-14 w-14" style={{ color: '#F1C94F' }} weight="regular" />
-                          ) : null}
+                      <div className="relative text-center flex flex-col h-full justify-center">
+                        {/* Icon */}
+                        <div className="mb-4 flex justify-center flex-shrink-0">
+                          <div className="w-14 h-14 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                            {service.image ? (
+                              <img src={service.image} alt={service.title[language]} className="h-14 w-14 object-contain" />
+                            ) : Icon ? (
+                              <Icon className="h-14 w-14" style={{ color: '#F1C94F' }} weight="regular" />
+                            ) : null}
+                          </div>
                         </div>
+
+                        {/* Title */}
+                        <h3 className="text-xl font-baloo font-bold text-white flex-shrink-0">
+                          {service.title[language]}
+                        </h3>
                       </div>
 
-                      {/* Title */}
-                      <h3 className="text-xl font-baloo font-bold text-white mb-3">
-                        {service.title[language]}
-                      </h3>
-
-                      {/* Description */}
-                      <p className="text-sm text-gray-400 leading-relaxed">
-                        {service.description[language]}
-                      </p>
+                      {/* Decorative corner accent */}
+                      <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
-
-                    {/* Decorative corner accent */}
-                    <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#F2CA50]/20 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
-                </motion.div>
+                </AnimatedCard>
               );
             })}
             </div>
@@ -651,14 +757,16 @@ const Home = () => {
 
         <div className="container mx-auto px-4 relative z-10">
           {/* Section Heading */}
-          <div className="text-center mb-16">
-            <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-6">
-              {t('DUK', 'FAQ')}
+          <div className="flex flex-col items-center mb-16">
+            <h2 id="faq-heading" className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-6 bg-black relative z-10 inline-block flex items-center justify-center">
+              {t('DUK', 'FAQ', 'FAQ', 'FAQ')}
             </h2>
-            <p className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto text-center bg-black relative z-10 inline-block">
               {t(
                 'Dažniausiai užduodami klausimai apie mūsų paslaugas',
-                'Frequently asked questions about our services'
+                'Frequently asked questions about our services',
+                'Często zadawane pytania dotyczące naszych usług',
+                'Часто задаваемые вопросы о наших услугах'
               )}
             </p>
           </div>
@@ -679,28 +787,31 @@ const Home = () => {
       </section>
 
       {/* Contact Form & Footer Section */}
-      <section id="contact-form" className="relative w-full py-24 overflow-hidden" style={{ contentVisibility: 'auto', zIndex: 10 }}>
+      <section id="contact-form" className="relative w-full pt-24 pb-0 mb-0 overflow-hidden" style={{ contentVisibility: 'auto', zIndex: 10 }}>
         {/* Cards container - positioned above the lines */}
-        <div className="relative" style={{ position: 'relative', zIndex: 10 }}>
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="relative mb-0 pb-0" style={{ position: 'relative', zIndex: 10 }}>
+        <div className="container mx-auto px-4 pb-0 mb-0 relative z-10">
           {/* Section Heading */}
           <div className="flex flex-col items-center mb-16">
-            <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-6 bg-black relative z-10 inline-block">
-              {t('Susisiekite', 'Contact Us')}
+            <h2 id="contact-heading" className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-6 bg-black relative z-10 inline-block">
+              {t('Susisiekite', 'Contact Us', 'Skontaktuj się z nami', 'Свяжитесь с нами')}
             </h2>
             <p className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto text-center bg-black relative z-10 inline-block">
               {t(
                 'Užpildykite formą ir susisieksime su jumis artimiausiu metu',
-                'Fill out the form and we will contact you soon'
+                'Fill out the form and we will contact you soon',
+                'Wypełnij formularz, a my skontaktujemy się z Tobą wkrótce',
+                'Заполните форму, и мы свяжемся с вами в ближайшее время'
               )}
             </p>
           </div>
 
           {/* Two Column Layout: Form + Footer Info */}
           <div className="grid lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
-            {/* Left Column - Contact Form */}
-            <div>
-              <Card className="relative overflow-hidden bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 group h-full">
+          {/* Left Column - Contact Form */}
+          <div className="force-hover-active">
+            <div className="relative group">
+              <Card className="relative overflow-hidden bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/50 group-hover:border-[#F2CA50]/50 transition-all duration-300 h-full">
                 {/* Shine effect on hover */}
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
@@ -719,14 +830,16 @@ const Home = () => {
                     <InquiryForm />
                   </div>
                 </CardContent>
-              </Card>
+                </Card>
+              </div>
             </div>
 
             {/* Right Column - Footer/Contact Info */}
-            <div className="flex flex-col justify-between">
-              <Card className="relative overflow-hidden bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/50 hover:border-[#F2CA50]/50 transition-all duration-300 group h-full">
-                {/* Shine effect on hover */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <AnimatedCard index={1} delay={0} className="flex flex-col justify-between">
+              <div className="relative group h-full">
+                <Card className="relative overflow-hidden bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/50 group-hover:border-[#F2CA50]/50 transition-all duration-300 h-full">
+                  {/* Shine effect on hover */}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#F2CA50]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
                 <BorderBeam
                   size={200}
@@ -742,7 +855,7 @@ const Home = () => {
                   <div className="space-y-8">
                     {/* Phone */}
                     <div>
-                      <p className="text-sm text-gray-400 mb-2">{t('Telefonas', 'Phone')}</p>
+                      <p className="text-sm text-gray-400 mb-2">{t('Telefonas', 'Phone', 'Telefon', 'Телефон')}</p>
                       <a 
                         href="tel:+37012345678" 
                         className="text-3xl md:text-4xl font-baloo font-bold text-white hover:text-[#F2CA50] transition-colors duration-300 inline-block"
@@ -753,7 +866,7 @@ const Home = () => {
 
                     {/* Email */}
                     <div>
-                      <p className="text-sm text-gray-400 mb-2">{t('El. paštas', 'Email')}</p>
+                      <p className="text-sm text-gray-400 mb-2">{t('El. paštas', 'Email', 'E-mail', 'Эл. почта')}</p>
                       <a 
                         href="mailto:info@customsconsulting.lt" 
                         className="text-3xl md:text-4xl font-baloo font-bold text-white hover:text-[#F2CA50] transition-colors duration-300 break-all inline-block"
@@ -769,38 +882,38 @@ const Home = () => {
                       {/* Working Hours */}
                       <div className="mt-6 p-4 rounded-lg bg-zinc-800/30 border border-zinc-800/50">
                         <h4 className="text-sm font-semibold text-white mb-2">
-                          {t('Darbo laikas', 'Working Hours')}
+                          {t('Darbo laikas', 'Working Hours', 'Godziny pracy', 'Рабочее время')}
                         </h4>
                         <p className="text-sm text-gray-400">
-                          {t('I–V: 8:00–17:00', 'Mon–Fri: 8:00–17:00')}
+                          {t('I–V: 8:00–17:00', 'Mon–Fri: 8:00–17:00', 'Pon–Pt: 8:00–17:00', 'Пн–Пт: 8:00–17:00')}
                         </p>
                         <p className="text-xs text-gray-500 mt-1">
-                          {t('Skubūs atvejai – 24/7', 'Urgent cases – 24/7')}
+                          {t('Skubūs atvejai – 24/7', 'Urgent cases – 24/7', 'Przypadki pilne – 24/7', 'Срочные случаи – 24/7')}
                         </p>
                       </div>
                     </div>
                   </div>
                 </CardContent>
-              </Card>
-            </div>
+                </Card>
+              </div>
+            </AnimatedCard>
           </div>
 
           {/* Bottom Footer Bar */}
-          <div className="border-t border-zinc-800/50 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400">
+          <div className="border-t border-zinc-800/50 mt-16 pt-8 pb-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400">
             <div className="text-center md:text-left">
               © {new Date().getFullYear()} UAB "Customs Consulting".{' '}
-              {t('Visos teisės saugomos.', 'All rights reserved.')}
+              {t('Visos teisės saugomos.', 'All rights reserved.', 'Wszelkie prawa zastrzeżone.', 'Все права защищены.')}
             </div>
             <div className="flex gap-6">
               <a href="#" className="hover:text-[#F2CA50] transition-colors duration-300">
-                {t('Privatumo politika', 'Privacy Policy')}
+                {t('Privatumo politika', 'Privacy Policy', 'Polityka prywatności', 'Политика конфиденциальности')}
               </a>
             </div>
           </div>
         </div>
         </div>
       </section>
-
     </div>
   );
 };

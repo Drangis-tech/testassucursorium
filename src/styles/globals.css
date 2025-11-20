@@ -5,7 +5,7 @@
 /* 
   Self-hosted fonts for optimal LCP performance
   Font files should be placed in /public/fonts/
-  
+
   To download optimized fonts:
   1. Visit https://google-webfonts-helper.herokuapp.com/fonts
   2. Search for "Manrope" and "Baloo 2"
@@ -42,11 +42,30 @@
   * {
     @apply border-border;
   }
-  
+
+  html,
   body {
     @apply bg-background text-foreground;
+    margin: 0 !important;
+    padding: 0 !important;
     font-family: 'Manrope', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'rlig' 1, 'calt' 1;
+    overflow-x: hidden;
+  }
+
+  #root {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Remove all default browser margins and paddings that might cause gaps */
+  body > div,
+  main,
+  section:last-child {
+    margin-bottom: 0 !important;
+  }
+  .theme {
+    --animate-line-shadow: line-shadow 15s linear infinite;
   }
 }
 
@@ -130,3 +149,78 @@
   }
 }
 
+/* Force hover effect for large screens */
+/* CRITICAL: Only apply to cards that are direct children of .force-hover-active > .group structure */
+/* This ensures services carousel cards are NOT affected */
+
+/* Target the main card container - very specific chain */
+.force-hover-active > .group > div.relative.h-full,
+.force-hover-active > .group > div.relative.overflow-hidden,
+.force-hover-active > .group > div.rounded-2xl,
+.force-hover-active > .group > div[class*="bg-gradient-to-br"] {
+  border-color: rgba(242, 202, 80, 0.5) !important;
+}
+
+/* Shine/gradient overlay effects - only direct children within force-hover-active */
+.force-hover-active > .group > div > .absolute.inset-0.bg-gradient-to-br,
+.force-hover-active > .group > div > .absolute.inset-0.rounded-2xl {
+  opacity: 1 !important;
+}
+
+/* All group-hover opacity effects - only within force-hover-active using child combinator */
+.force-hover-active > .group .group-hover\:opacity-100 {
+  opacity: 1 !important;
+}
+
+/* Icon and element scale effects - only within force-hover-active using child combinator */
+.force-hover-active > .group .group-hover\:scale-110 {
+  transform: scale(1.1) !important;
+}
+
+/* Corner accent visibility - ONLY within force-hover-active direct children */
+.force-hover-active > .group .absolute.top-0.right-0.w-12,
+.force-hover-active > .group .absolute.top-0.right-0.border-t {
+  opacity: 1 !important;
+}
+
+/* Services carousel hover effects - using direct :hover instead of group-hover */
+/* This ensures ONLY the hovered card shows effects, not neighboring cards */
+.service-card-link:hover .service-card-shine {
+  opacity: 1 !important;
+}
+
+.service-card-link:hover .service-card-icon {
+  transform: scale(1.1) !important;
+}
+
+.service-card-link:hover .service-card-corner {
+  opacity: 1 !important;
+}
+
+/* 
+  ---break---
+*/
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* 
+  ---break---
+*/
+
+@theme inline {
+  @keyframes line-shadow {
+  0% {
+    background-position: 0 0;
+    }
+  100% {
+    background-position: 100% -100%;
+    }
+  }
+}

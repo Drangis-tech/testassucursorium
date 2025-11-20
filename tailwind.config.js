@@ -80,6 +80,14 @@ export default {
             'background-position': '100% 50%',
           },
         },
+        'line-shadow': {
+          '0%': {
+            'background-position': '0% 0%',
+          },
+          '100%': {
+            'background-position': '100% -100%',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -87,6 +95,7 @@ export default {
         marquee: 'marquee var(--duration) linear infinite',
         'marquee-vertical': 'marquee-vertical var(--duration) linear infinite',
         gradient: 'gradient 8s linear infinite',
+        'line-shadow': 'line-shadow 15s linear infinite',
       },
     },
   },

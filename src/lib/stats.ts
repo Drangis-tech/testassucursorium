@@ -4,6 +4,8 @@ export interface Stat {
   label: {
     lt: string;
     en: string;
+    pl: string;
+    ru: string;
   };
   prefix?: string;
   suffix?: string;
@@ -12,19 +14,25 @@ export interface Stat {
 export const stats: Stat[] = [
   {
     id: 'declarations',
-    value: 2847,
+    value: 15000,
+    suffix: '+',
     label: {
-      lt: 'Deklaracijų įforminta per metus',
-      en: 'Declarations processed per year',
+      lt: 'Per metus įformintų deklaracijų skaičius',
+      en: 'Number of declarations filed per year',
+      pl: 'Liczba złożonych deklaracji w ciągu roku',
+      ru: 'Количество оформленных деклараций в течение года',
     },
   },
   {
     id: 'guarantees',
-    value: 520000,
+    value: 160000000,
+    suffix: '+',
     prefix: '€',
     label: {
-      lt: 'Bendra suteiktų garantijų suma per metus',
-      en: 'Total guarantee amount per year',
+      lt: 'Per metus suteiktų garantijų vertė eurais',
+      en: 'Value of guarantees provided per year in euros',
+      pl: 'Wartość udzielonych gwarancji w ciągu roku w euro',
+      ru: 'Стоимость предоставленных гарантий за год в евро',
     },
   },
   {
@@ -32,8 +40,10 @@ export const stats: Stat[] = [
     value: 15,
     suffix: '+',
     label: {
-      lt: 'Metų patirtis',
+      lt: 'Metų patirties',
       en: 'Years of experience',
+      pl: 'Lata doświadczenia',
+      ru: 'Годы опыта',
     },
   },
 ];

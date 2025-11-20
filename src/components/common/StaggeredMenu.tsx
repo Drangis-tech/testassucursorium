@@ -1,12 +1,17 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { Link } from 'react-router-dom';
+import { CaretDown } from '@phosphor-icons/react';
 import './StaggeredMenu.css';
 
 export interface StaggeredMenuItem {
   label: string;
   ariaLabel: string;
   link: string;
+  children?: {
+    label: string;
+    link: string;
+  }[];
 }
 
 export interface StaggeredMenuSocialItem {
@@ -31,6 +36,7 @@ export interface StaggeredMenuProps {
   onMenuClose?: () => void;
   isFixed?: boolean;
   currentLanguage?: string;
+  alwaysShowLogo?: boolean;
 }
 
 export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
@@ -49,7 +55,8 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   isFixed = false,
   currentLanguage = 'lt',
   onMenuOpen,
-  onMenuClose
+  onMenuClose,
+  alwaysShowLogo = false
 }: StaggeredMenuProps) => {
   const [open, setOpen] = useState(false);
   const openRef = useRef(false);
@@ -71,6 +78,16 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   const toggleBtnRef = useRef<HTMLButtonElement | null>(null);
   const busyRef = useRef(false);
   const itemEntranceTweenRef = useRef<gsap.core.Tween | null>(null);
+  const [expandedItems, setExpandedItems] = useState<Record<number, boolean>>({});
+
+  const toggleItemExpand = (index: number, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setExpandedItems(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -368,6 +385,10 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     } else {
       onMenuClose?.();
       playClose();
+      // Reset expanded items when closing menu
+      setTimeout(() => {
+        setExpandedItems({});
+      }, 400);
     }
     animateIcon(target);
     animateColor(target);
@@ -393,9 +414,11 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
         })()}
       </div>
       <header className="staggered-menu-header" aria-label="Main navigation header">
-        <Link to="/" className="sm-logo" aria-label="Logo" onClick={(e) => {
+        <Link to={currentLanguage === 'lt' ? '/' : `/${currentLanguage}`} className={`sm-logo ${alwaysShowLogo ? 'absolute left-8 top-1/2 -translate-y-1/2' : ''}`} aria-label="Logo" onClick={(e) => {
           // If already on homepage, scroll to top
-          if (window.location.pathname === '/' || window.location.pathname === '/en') {
+          const path = window.location.pathname;
+          const isHome = path === '/' || path === `/${currentLanguage}` || (currentLanguage === 'lt' && path === '/');
+          if (isHome) {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }
@@ -403,7 +426,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           <img
             src={logoUrl || '/src/assets/logos/reactbits-gh-white.svg'}
             alt="Logo"
-            className="sm-logo-img"
+            className={`sm-logo-img ${alwaysShowLogo ? '' : '[@media(min-width:1470px)]:hidden'}`}
             draggable={false}
             width={110}
             height={24}
@@ -411,7 +434,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
         </Link>
         <button
           ref={toggleBtnRef}
-          className="sm-toggle"
+          className="sm-toggle ml-auto"
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
           aria-controls="staggered-menu-panel"
@@ -445,39 +468,125 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                                    it.link.startsWith('tel:') || it.link.startsWith('mailto:');
                 const isInternal = it.link.startsWith('/') && !isHashLink && !isExternal;
                 
+                const hasChildren = it.children && it.children.length > 0;
+                const isExpanded = expandedItems[idx];
+
                 return (
                   <li className="sm-panel-itemWrap" key={it.label + idx}>
-                    {isInternal ? (
-                      <Link 
-                        to={it.link} 
-                        className="sm-panel-item" 
-                        aria-label={it.ariaLabel} 
-                        data-index={idx + 1}
-                        onClick={() => {
-                          // Close menu after clicking
-                          if (openRef.current) {
-                            toggleMenu();
-                          }
-                        }}
-                      >
-                        <span className="sm-panel-itemLabel">{it.label}</span>
-                      </Link>
-                    ) : (
-                      <a 
-                        className="sm-panel-item" 
-                        href={it.link} 
-                        aria-label={it.ariaLabel} 
-                        data-index={idx + 1}
-                        onClick={() => {
-                          // Close menu after clicking
-                          if (openRef.current) {
-                            toggleMenu();
-                          }
-                        }}
-                      >
-                        <span className="sm-panel-itemLabel">{it.label}</span>
-                      </a>
-                    )}
+                    <div className="flex flex-col">
+                      <div className="flex items-center justify-between">
+                        {isInternal ? (
+                          <Link 
+                            to={it.link} 
+                            className="sm-panel-item" 
+                            aria-label={it.ariaLabel} 
+                            data-index={idx + 1}
+                            onClick={(e) => {
+                              if (hasChildren) {
+                                toggleItemExpand(idx, e);
+                              } else {
+                                // Close menu after clicking
+                                if (openRef.current) {
+                                  toggleMenu();
+                                }
+                              }
+                            }}
+                          >
+                            <span className="sm-panel-itemLabel flex items-center gap-2">
+                              {it.label}
+                              {hasChildren && (
+                                <CaretDown 
+                                  weight="bold" 
+                                  className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+                                  size={32}
+                                />
+                              )}
+                            </span>
+                          </Link>
+                        ) : (
+                          <a 
+                            className="sm-panel-item" 
+                            href={it.link} 
+                            aria-label={it.ariaLabel} 
+                            data-index={idx + 1}
+                            onClick={(e) => {
+                              if (hasChildren) {
+                                toggleItemExpand(idx, e);
+                              } else {
+                                // Close menu after clicking
+                                if (openRef.current) {
+                                  toggleMenu();
+                                }
+                              }
+                            }}
+                          >
+                            <span className="sm-panel-itemLabel flex items-center gap-2">
+                              {it.label}
+                              {hasChildren && (
+                                <CaretDown 
+                                  weight="bold" 
+                                  className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+                                  size={32}
+                                />
+                              )}
+                            </span>
+                          </a>
+                        )}
+                      </div>
+
+                      {/* Submenu */}
+                      {hasChildren && (
+                        <div 
+                          className={`overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'max-h-[500px] opacity-100 mt-2' : 'max-h-0 opacity-0'}`}
+                        >
+                          <ul className="flex flex-col gap-2">
+                            {it.children!.map((child, childIdx) => (
+                              <li key={childIdx}>
+                                {child.link.includes('#') ? (
+                                  <a
+                                    href={child.link}
+                                    className="text-2xl font-semibold text-gray-500 hover:text-[#F2CA50] transition-colors duration-200 block py-1 uppercase"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      if (openRef.current) {
+                                        toggleMenu();
+                                      }
+                                      
+                                      // Handle scroll
+                                      const [path, hash] = child.link.split('#');
+                                      if (window.location.pathname === path) {
+                                        // If on same page, just scroll
+                                        const element = document.getElementById(hash);
+                                        if (element) {
+                                          element.scrollIntoView({ behavior: 'smooth' });
+                                        }
+                                      } else {
+                                        // If different page, navigate then scroll
+                                        window.location.href = child.link;
+                                      }
+                                    }}
+                                  >
+                                    {child.label}
+                                  </a>
+                                ) : (
+                                  <Link
+                                    to={child.link}
+                                    className="text-2xl font-semibold text-gray-500 hover:text-[#F2CA50] transition-colors duration-200 block py-1 uppercase"
+                                    onClick={() => {
+                                      if (openRef.current) {
+                                        toggleMenu();
+                                      }
+                                    }}
+                                  >
+                                    {child.label}
+                                  </Link>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
                   </li>
                 );
               })
