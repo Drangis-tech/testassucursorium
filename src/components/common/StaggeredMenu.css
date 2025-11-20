@@ -359,6 +359,7 @@
     width: 100%;
     left: 0;
     right: 0;
+    padding: 6em 1.5em 2em 1.5em;
   }
   
   .sm-prelayers {
@@ -368,7 +369,12 @@
   }
 
   .sm-panel-item {
-    font-size: 2.5rem;
+    font-size: clamp(1.5rem, 9vw, 2.5rem);
+    white-space: nowrap;
+  }
+
+  .sm-panel-list[data-numbering] .sm-panel-item::after {
+    right: 0;
   }
 }
 

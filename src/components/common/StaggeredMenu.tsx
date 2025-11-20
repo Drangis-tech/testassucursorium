@@ -396,6 +396,24 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     animateText(target);
   }, [playOpen, playClose, animateIcon, animateColor, animateText, onMenuOpen, onMenuClose]);
 
+  // Restore styles for new items when content changes while menu is open
+  useLayoutEffect(() => {
+    if (open && panelRef.current) {
+      const numberEls = Array.from(
+        panelRef.current.querySelectorAll('.sm-panel-list[data-numbering] .sm-panel-item')
+      ) as HTMLElement[];
+      
+      if (numberEls.length) {
+        gsap.set(numberEls, { '--sm-num-opacity': 1, overwrite: true, force3D: true });
+      }
+
+      const itemEls = Array.from(panelRef.current.querySelectorAll('.sm-panel-itemLabel')) as HTMLElement[];
+      if (itemEls.length) {
+        gsap.set(itemEls, { yPercent: 0, rotate: 0, overwrite: true, force3D: true });
+      }
+    }
+  }, [items, open]);
+
   return (
     <div
       className={(className ? className + ' ' : '') + 'staggered-menu-wrapper' + (isFixed ? ' fixed-wrapper' : '')}
