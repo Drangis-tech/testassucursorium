@@ -37,6 +37,7 @@ export interface StaggeredMenuProps {
   isFixed?: boolean;
   currentLanguage?: string;
   alwaysShowLogo?: boolean;
+  socialTitle?: string;
 }
 
 export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
@@ -56,7 +57,8 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   currentLanguage = 'lt',
   onMenuOpen,
   onMenuClose,
-  alwaysShowLogo = false
+  alwaysShowLogo = false,
+  socialTitle = 'Kalbos'
 }: StaggeredMenuProps) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -627,7 +629,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           </ul>
           {displaySocials && socialItems && socialItems.length > 0 && (
             <div className="sm-socials" aria-label="Social links">
-              <h3 className="sm-socials-title">Kalbos</h3>
+              <h3 className="sm-socials-title uppercase text-black">{socialTitle}</h3>
               <ul className="sm-socials-list" role="list">
                 {socialItems.map((s, i) => {
                   const langCode = s.link.replace('#lang-', '').toLowerCase();

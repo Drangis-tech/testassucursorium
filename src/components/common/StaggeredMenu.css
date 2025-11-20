@@ -371,10 +371,13 @@
   .sm-panel-item {
     font-size: clamp(1.5rem, 9vw, 2.5rem);
     white-space: nowrap;
+    padding-right: 0.6em;
   }
 
   .sm-panel-list[data-numbering] .sm-panel-item::after {
     right: 0;
+    top: 0;
+    font-size: 14px;
   }
 }
 

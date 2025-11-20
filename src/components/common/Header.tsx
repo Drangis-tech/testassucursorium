@@ -123,6 +123,7 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
         onMenuOpen={() => onMenuToggle?.(true)}
         onMenuClose={() => onMenuToggle?.(false)}
         alwaysShowLogo={isServicesPage}
+        socialTitle={t('Kalbos', 'Languages', 'Języki', 'Языки')}
       />
     </div>
   );
