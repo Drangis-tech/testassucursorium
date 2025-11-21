@@ -1,6 +1,6 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { CaretDown } from '@phosphor-icons/react';
 import { scrollToSection } from '@/utils/scrollToSection';
 import './StaggeredMenu.css';
@@ -61,7 +61,6 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   alwaysShowLogo = false,
   socialTitle = 'Kalbos'
 }: StaggeredMenuProps) => {
-  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const openRef = useRef(false);
   const panelRef = useRef<HTMLDivElement | null>(null);

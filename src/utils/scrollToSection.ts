@@ -13,8 +13,6 @@ const hashToSectionId: Record<string, string> = {
   // English
   'about-us': 'about',
   'internal-customs-services': 'services',
-  'border-services': 'border-services',
-  'faq': 'faq',
   'contacts': 'contact-form',
   
   // Russian
@@ -24,7 +22,6 @@ const hashToSectionId: Record<string, string> = {
   'kontakty': 'contact-form',
   
   // Polish
-  'o-nas': 'about',
   'wewnetrzne-uslugi-celne': 'services',
   'uslugi-na-granicy': 'border-services',
   'kontakt': 'contact-form',
