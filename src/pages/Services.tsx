@@ -118,15 +118,20 @@ const Services = () => {
               transition={{ duration: 0.6 }}
               className="flex flex-col items-center mb-16"
             >
-              <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-white leading-tight mb-6 bg-black relative z-10 inline-block flex items-center justify-center flex-wrap text-center">
-                {t('Paslaugos pasieniuose – ', 'Border Services ', 'Usługi na granicy – ', 'Услуги на границе – ')}
-                <LineShadowText 
-                  shadowColor="#F2CA50" 
-                  as="span" 
-                  className="text-white text-6xl sm:text-7xl md:text-8xl lg:text-[110px] inline-flex items-center italic"
-                >
-                  24/7
-                </LineShadowText>
+              <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-white leading-tight mb-2 bg-black relative z-10 inline-block text-center max-[1236px]:text-center min-[1236px]:flex min-[1236px]:items-center min-[1236px]:justify-center -mt-3">
+                <span className="max-[1236px]:block min-[1236px]:inline">
+                  {t('Paslaugos pasieniuose', 'Border Services', 'Usługi na granicy', 'Услуги на границе')}
+                </span>
+                <span className="max-[1236px]:hidden min-[1236px]:inline mx-2">–</span>
+                <span className="max-[1236px]:block max-[1236px]:mt-2 min-[1236px]:inline-flex min-[1236px]:items-center">
+                  <LineShadowText 
+                    shadowColor="#F2CA50" 
+                    as="span" 
+                    className="text-white text-6xl sm:text-7xl md:text-8xl lg:text-[110px] italic"
+                  >
+                    24/7
+                  </LineShadowText>
+                </span>
               </h2>
               <p className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto text-center">
                 {t(

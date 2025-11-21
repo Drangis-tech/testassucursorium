@@ -17,9 +17,10 @@ import { borderServices } from '@/lib/borderServices';
 import { Marquee } from '@/components/ui/marquee';
 import aboutImage from '@/assets/about.webp';
 import logo from '@/assets/logo.png';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import ClientMountWhenVisible from '@/components/common/ClientMountWhenVisible';
 import DecorativeLines from '@/components/common/DecorativeLines';
+import { handleHashScroll } from '@/utils/scrollToSection';
 
 // Lazy-load heavy WebGL background animations - only load when needed
 const DarkVeil = lazy(() => import('@/components/common/DarkVeil'));
@@ -177,20 +178,16 @@ FAQCard.displayName = 'FAQCard';
 
 const Home = () => {
   const { language, t } = useLanguage();
+  const location = useLocation();
 
-  // Handle scroll to hash section on page load
+  // Handle scroll to hash section on page load and when hash changes
   useEffect(() => {
-    const hash = window.location.hash;
+    const hash = location.hash;
     if (hash) {
-      // Small delay to ensure page is fully rendered
-      setTimeout(() => {
-        const element = document.querySelector(hash);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
+      // Use the utility function with proper offset and retry logic
+      handleHashScroll(hash, 200);
     }
-  }, []);
+  }, [location.hash]); // Re-run when hash changes
 
   return (
     <div className="relative overflow-hidden m-0 p-0">
@@ -372,7 +369,7 @@ const Home = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
-                className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-white leading-tight mb-6"
+                className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-6"
               >
                 {t('Apie mus', 'About Us', 'O nas', 'О нас')}
               </motion.h2>
@@ -518,10 +515,10 @@ const Home = () => {
             transition={{ duration: 0.6 }}
             className="flex flex-col items-center mb-16"
           >
-            <h2 id="services-heading" className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-6 bg-black relative z-10 inline-block flex items-center justify-center">
+            <h2 id="services-heading" className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-6 bg-black relative z-10 inline-block text-center max-[1236px]:text-center">
               {t('Paslaugos vidinėse muitinėse', 'Our Services', 'Usługi w wewnętrznych urzędach celnych', 'Услуги во внутренних таможнях')}
             </h2>
-            <p className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto text-center">
               {t(
                 'Profesionalūs muitinės įforminimo sprendimai visiems Jūsų poreikiams',
                 'Professional customs clearance solutions for all your needs',
@@ -660,17 +657,24 @@ const Home = () => {
               transition={{ duration: 0.6 }}
               className="flex flex-col items-center mb-16"
             >
-            <h2 id="border-services-heading" className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-6 bg-black relative z-10 inline-block flex items-center justify-center -mt-3">
-              {t('Paslaugos pasieniuose – ', 'Border Services ', 'Usługi na granicy – ', 'Услуги на границе – ')}
-              <LineShadowText 
-                shadowColor="#F2CA50" 
-                as="span" 
-                className="text-[#F2CA50] text-6xl sm:text-7xl md:text-8xl lg:text-[110px] inline-flex items-center italic"
-              >
-                24/7
-              </LineShadowText>
-            </h2>
-              <p className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto text-center bg-black relative z-10 inline-block">
+            <div className="flex flex-col items-center">
+              <h2 id="border-services-heading" className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-2 bg-black relative z-10 inline-block text-center max-[1236px]:text-center min-[1236px]:flex min-[1236px]:items-center min-[1236px]:justify-center -mt-3">
+                <span className="max-[1236px]:block min-[1236px]:inline">
+                  {t('Paslaugos pasieniuose', 'Border Services', 'Usługi na granicy', 'Услуги на границе')}
+                </span>
+                <span className="max-[1236px]:hidden min-[1236px]:inline mx-2">–</span>
+                <span className="max-[1236px]:block max-[1236px]:mt-2 min-[1236px]:inline-flex min-[1236px]:items-center">
+                  <LineShadowText 
+                    shadowColor="#F2CA50" 
+                    as="span" 
+                    className="text-[#F2CA50] text-6xl sm:text-7xl md:text-8xl lg:text-[110px] italic"
+                  >
+                    24/7
+                  </LineShadowText>
+                </span>
+              </h2>
+            </div>
+              <p className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto text-center bg-black relative z-10 inline-block mt-4">
                 {t(
                   'Profesionalūs muitinės įforminimo sprendimai visiems Jūsų poreikiams',
                   'Professional customs clearance solutions for all your needs',

@@ -2,6 +2,7 @@ import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { Link, useNavigate } from 'react-router-dom';
 import { CaretDown } from '@phosphor-icons/react';
+import { scrollToSection } from '@/utils/scrollToSection';
 import './StaggeredMenu.css';
 
 export interface StaggeredMenuItem {
@@ -534,9 +535,30 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                               if (hasChildren) {
                                 toggleItemExpand(idx, e);
                               } else {
-                                // Close menu after clicking
-                                if (openRef.current) {
-                                  toggleMenu();
+                                // Handle hash links (simple check - starts with #)
+                                if (it.link.startsWith('#')) {
+                                  e.preventDefault();
+                                  
+                                  // Get the hash without the #
+                                  const hash = it.link.substring(1);
+                                  
+                                  // Update URL without scrolling (pushState)
+                                  window.history.pushState({}, '', it.link);
+                                  
+                                  // Close menu first
+                                  if (openRef.current) {
+                                    toggleMenu();
+                                  }
+                                  
+                                  // Scroll after menu closes - increased delay for smoother transition
+                                  setTimeout(() => {
+                                    scrollToSection(hash, 50);
+                                  }, 500);
+                                } else {
+                                  // Close menu after clicking (for regular links)
+                                  if (openRef.current) {
+                                    toggleMenu();
+                                  }
                                 }
                               }
                             }}
@@ -563,36 +585,28 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                           <ul className="flex flex-col gap-2">
                             {it.children!.map((child, childIdx) => (
                               <li key={childIdx}>
-                                {child.link.includes('#') ? (
+                                {child.link.startsWith('#') ? (
                                   <a
                                     href={child.link}
                                     className="text-2xl font-semibold text-gray-500 hover:text-[#F2CA50] transition-colors duration-200 block py-1 uppercase"
                                     onClick={(e) => {
                                       e.preventDefault();
+                                      
+                                      // Get the hash without the #
+                                      const hash = child.link.substring(1);
+                                      
+                                      // Update URL without scrolling (pushState)
+                                      window.history.pushState({}, '', child.link);
+                                      
+                                      // Close menu first
                                       if (openRef.current) {
                                         toggleMenu();
                                       }
                                       
-                                      // Handle scroll
-                                      const [path, hash] = child.link.split('#');
-                                      if (window.location.pathname === path) {
-                                        // If on same page, just scroll
-                                        const element = document.getElementById(hash);
-                                        if (element) {
-                                          element.scrollIntoView({ behavior: 'smooth' });
-                                        }
-                                      } else {
-                                        // If different page, navigate then scroll
-                                        navigate(child.link);
-                                        // We need to wait for navigation to complete and element to mount
-                                        // This is a simple attempt, for robust solution use useEffect with location.hash
-                                        setTimeout(() => {
-                                            const element = document.getElementById(hash);
-                                            if (element) {
-                                                element.scrollIntoView({ behavior: 'smooth' });
-                                            }
-                                        }, 100);
-                                      }
+                                      // Scroll after menu closes - increased delay for smoother transition
+                                      setTimeout(() => {
+                                        scrollToSection(hash, 50);
+                                      }, 500);
                                     }}
                                   >
                                     {child.label}

@@ -23,7 +23,7 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
     {
       label: t('Apie mus', 'About Us', 'O nas', 'О нас'),
       ariaLabel: t('Sužinoti apie mus', 'Learn about us', 'Dowiedz się o nas', 'Узнать о нас'),
-      link: (basePath || '') + '/#about',
+      link: '#' + t('apie-mus', 'about-us', 'o-nas', 'o-nas'),
     },
     {
       label: t('Paslaugos', 'Services', 'Usługi', 'Услуги'),
@@ -32,27 +32,27 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
       children: [
         {
           label: t('Vidinėse muitinėse', 'Internal Customs', 'Wewnętrzne urzędy celne', 'Во внутренних таможнях'),
-          link: (basePath || '') + '/#services'
+          link: '#' + t('paslaugos-vidinese-muitinese', 'internal-customs-services', 'wewnetrzne-uslugi-celne', 'vnutrennie-tamozhennye-uslugi')
         },
         {
           label: t('Pasieniuose', 'At Borders', 'Na granicach', 'На границах'),
-          link: (basePath || '') + '/#border-services'
+          link: '#' + t('paslaugos-pasieniuose', 'border-services', 'uslugi-na-granicy', 'uslugi-na-granice')
         },
         {
           label: t('Visos', 'All', 'Wszystkie', 'Все'),
-          link: (basePath || '') + '/services'
+          link: basePath + '/services'
         }
       ]
     },
     {
       label: t('DUK', 'FAQ', 'FAQ', 'FAQ'),
       ariaLabel: t('Dažniausiai užduodami klausimai', 'Frequently asked questions', 'Często zadawane pytania', 'Часто задаваемые вопросы'),
-      link: (basePath || '') + '/#faq',
+      link: '#' + t('DUK', 'faq', 'faq', 'faq'),
     },
     {
       label: t('Kontaktai', 'Contacts', 'Kontakt', 'Контакты'),
       ariaLabel: t('Susisiekite su mumis', 'Contact us', 'Skontaktuj się z nami', 'Свяжитесь с нами'),
-      link: (basePath || '') + '/#contact-form',
+      link: '#' + t('kontaktai', 'contacts', 'kontakt', 'kontakty'),
     },
   ];
 

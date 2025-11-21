@@ -2,6 +2,7 @@
 import { CaretRight } from '@phosphor-icons/react';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { scrollToSection } from '@/utils/scrollToSection';
 
 interface FlowButtonProps {
   text?: string;
@@ -70,6 +71,19 @@ export function FlowButton({
       componentProps = {
         ...componentProps,
         href,
+        ...(isHashLink && {
+          onClick: (e: React.MouseEvent) => {
+            e.preventDefault();
+            const hash = href.split('#')[1];
+            if (hash) {
+              // Update URL
+              window.history.pushState({}, '', href);
+              // Scroll to section with reduced offset for more downward scroll
+              scrollToSection(hash, 50);
+            }
+            if (onClick) onClick();
+          }
+        })
       };
     }
   }
