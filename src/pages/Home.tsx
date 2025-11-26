@@ -16,10 +16,11 @@ import { services } from '@/lib/services';
 import { borderServices } from '@/lib/borderServices';
 import { Marquee } from '@/components/ui/marquee';
 import aboutImage from '@/assets/about.webp';
-import logo from '@/assets/logo.png';
+import heroLogo from '@/assets/logo/customsconsulting.svg';
 import { Link, useLocation } from 'react-router-dom';
 import ClientMountWhenVisible from '@/components/common/ClientMountWhenVisible';
 import DecorativeLines from '@/components/common/DecorativeLines';
+import { SEO } from '@/components/common/SEO';
 import { handleHashScroll } from '@/utils/scrollToSection';
 
 // Lazy-load heavy WebGL background animations - only load when needed
@@ -180,6 +181,19 @@ const Home = () => {
   const { language, t } = useLanguage();
   const location = useLocation();
 
+  const seoTitle = t(
+    'Muitinės tarpininkas',
+    'Customs Broker',
+    'Agencja Celna',
+    'Таможенный брокер'
+  );
+  const seoDescription = t(
+    'Patikimas muitinės tarpininkas Lietuvoje. Deklaravimas, atstovavimas muitinėje, konsultacijos.',
+    'Reliable customs broker in Lithuania. Declaration, customs representation, consulting.',
+    'Niezawodna agencja celna na Litwie. Deklaracje, reprezentacja celna, doradztwo.',
+    'Надежный таможенный брокер в Литве. Декларирование, представительство в таможне, консультации.'
+  );
+
   // Handle scroll to hash section on page load and when hash changes
   useEffect(() => {
     const hash = location.hash;
@@ -191,6 +205,10 @@ const Home = () => {
 
   return (
     <div className="relative overflow-hidden m-0 p-0">
+      <SEO 
+        title={seoTitle}
+        description={seoDescription}
+      />
       {/* Decorative Lines - Desktop Only */}
       <DecorativeLines />
 
@@ -216,50 +234,26 @@ const Home = () => {
 
         {/* Content */}
         <div className="w-full relative z-10 flex justify-center items-center">
-          <div className="w-full max-w-[95%] sm:max-w-[90%] md:max-w-[85%] lg:max-w-[80%] xl:max-w-[85%] 2xl:max-w-[80%] px-6 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 mx-auto">
-            {/* Logo + Company Name */}
+          <div className="w-full max-w-[95%] sm:max-w-[90%] md:max-w-[85%] lg:max-w-[80%] xl:max-w-[85%] 2xl:max-w-[80%] px-6 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 mx-auto flex justify-center">
+            <h1 className="sr-only">
+              {t(
+                'Customs Consulting - Muitinės Tarpininkas',
+                'Customs Consulting - Customs Broker',
+                'Customs Consulting - Agencja Celna',
+                'Customs Consulting - Таможенный брокер'
+              )}
+            </h1>
+            {/* Hero Logo */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="mb-6 sm:mb-8 md:mb-10 lg:mb-12 text-left flex items-center gap-3 sm:gap-4"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8 }}
+              className="flex justify-center items-center w-full"
             >
               <img 
-                src={logo} 
-                alt="Customs Consulting Logo" 
-                className="hidden [@media(min-width:1470px)]:block h-[32px] xl:h-[38px] 2xl:h-[45px] w-auto object-contain flex-shrink-0"
-              />
-              <p className="text-[18px] sm:text-[20px] md:text-[24px] lg:text-[26px] xl:text-[32px] 2xl:text-[38px] [@media(min-width:1800px)]:text-[45px] text-muted-foreground tracking-wide leading-tight">
-                CUSTOMS CONSULTING
-              </p>
-            </motion.div>
-
-            {/* Main Heading */}
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-[28px] sm:text-[32px] md:text-[42px] lg:text-[46px] xl:text-[56px] 2xl:text-[64px] [@media(min-width:1800px)]:text-[72px] font-baloo font-bold leading-[1.2] sm:leading-[1.25] md:leading-[1.3] text-left mb-8 sm:mb-10 md:mb-12 lg:mb-14 xl:mb-16"
-            >
-              {t(
-                'Patikimas ir profesionalus atstovavimas muitinėje – sklandžiai, tiksliai ir pagal kiekvieno kliento poreikius.',
-                'Reliable and professional customs representation – smooth, accurate, and tailored to each client\'s needs.',
-                'Niezawodna i profesjonalna reprezentacja w urzędzie celnym – sprawnie, dokładnie i zgodnie z potrzebami każdego klienta.',
-                'Надежное и профессиональное представительство на таможне – гладко, точно и в соответствии с потребностями каждого клиента.'
-              )}
-            </motion.h1>
-
-            {/* CTA Button */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-left"
-            >
-              <FlowButton
-                href="#contact-form"
-                text={t('Susisiekite', 'Contact Us', 'Skontaktuj się', 'Свяжитесь')}
-                size="large"
+                src={heroLogo} 
+                alt="Customs Consulting" 
+                className="w-full max-w-[1800px] h-auto object-contain"
               />
             </motion.div>
           </div>
@@ -269,7 +263,7 @@ const Home = () => {
 
 
       {/* Statistics */}
-      <section id="statistics" className="relative w-full py-24 overflow-hidden" style={{ contentVisibility: 'auto', zIndex: 10 }}>
+      <section id="statistics" className="relative w-full py-24 overflow-hidden" style={{ zIndex: 10 }}>
         {/* Cards container - positioned above the lines */}
         <div className="relative" style={{ position: 'relative', zIndex: 10 }}>
           <div className="container mx-auto px-4 relative">
@@ -329,7 +323,7 @@ const Home = () => {
       </section>
 
       {/* About Us Section */}
-      <section id="about" className="relative w-full min-h-screen bg-black overflow-hidden py-12 lg:py-24 lg:flex lg:items-center" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 800px' }}>
+      <section id="about" className="relative w-full min-h-screen bg-black overflow-hidden py-12 lg:py-24 lg:flex lg:items-center">
         {/* Background particles effect */}
         <div className="absolute inset-0">
           <Particles
@@ -365,6 +359,7 @@ const Home = () => {
               className="order-1 lg:order-2 lg:col-start-2"
             >
               <motion.h2
+                id="about-heading"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -471,7 +466,7 @@ const Home = () => {
                         dangerouslySetInnerHTML={{
                           __html: t(
                             'Lanksčiai prisitaikome prie skirtingų klientų poreikių ir užtikriname sprendimus, atitinkančius visus teisės aktų reikalavimus.<br /><br />Galime pasiūlyti profesionalius ir patogius sprendimus kiekvienai situacijai, o mūsų tikslas – užtikrinti sklandų ir teisės aktus atitinkantį krovinių įforminimą bei patikimą atstovavimą muitinėje.<br /><br />',
-                            'We ensure fast and professional cargo customs clearance with 12+ years of experience in international trade.',
+                            'We flexibly adapt to different client needs and ensure solutions that meet all legal requirements.<br /><br />We can offer professional and convenient solutions for every situation, and our goal is to ensure smooth, legally compliant cargo documentation and reliable representation at customs.<br /><br />',
                             'Elastycznie dostosowujemy się do różnych potrzeb klientów i zapewniamy rozwiązania zgodne ze wszystkimi wymogami prawnymi.<br /><br />Możemy zaoferować profesjonalne i wygodne rozwiązania w każdej sytuacji, a naszym celem jest zapewnienie sprawnej i zgodnej z prawem odprawy ładunków oraz rzetelna reprezentacja w urzędzie celnym.<br /><br />',
                             'Мы гибко адаптируемся к различным потребностям клиентов и предоставляем решения, соответствующие всем законодательным требованиям.<br /><br />Мы можем предложить профессиональные и удобные решения для любой ситуации, а наша цель — обеспечить бесперебойное и законное оформление грузов и надежное представительство на таможне.<br /><br />'
                           )
@@ -491,7 +486,7 @@ const Home = () => {
       </section>
 
       {/* Services Carousel Section */}
-      <section id="services" className="relative w-full bg-black py-24 overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 600px' }}>
+      <section id="services" className="relative w-full bg-black py-24 overflow-hidden">
         {/* Background particles effect */}
         <div className="absolute inset-0">
           <Particles
@@ -515,8 +510,8 @@ const Home = () => {
             transition={{ duration: 0.6 }}
             className="flex flex-col items-center mb-16"
           >
-            <h2 id="services-heading" className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-6 bg-black relative z-10 inline-block text-center max-[1236px]:text-center">
-              {t('Paslaugos vidinėse muitinėse', 'Our Services', 'Usługi w wewnętrznych urzędach celnych', 'Услуги во внутренних таможнях')}
+            <h2 id="services-heading" className="text-5xl sm:text-6xl md:text-7xl lg:text-[90px] font-baloo font-bold text-[#F2CA50] leading-tight mb-6 bg-black relative z-10 inline-block text-center max-[1236px]:text-center whitespace-pre-line">
+              {t('Paslaugos vidinėse muitinėse', 'Our Services', 'Usługi w wewnętrznych\nurzędach celnych', 'Услуги во внутренних\nтаможнях')}
             </h2>
             <p className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto text-center">
               {t(
@@ -541,7 +536,7 @@ const Home = () => {
                 return (
                   <Link
                     key={service.id}
-                    to={language === 'en' ? '/en/services' : '/services'}
+                    to={language === 'lt' ? '/services' : `/${language}/services`}
                     className="block service-card-link"
                   >
                     <Card
@@ -588,7 +583,7 @@ const Home = () => {
                 return (
                   <Link
                     key={service.id}
-                    to={language === 'en' ? '/en/services' : '/services'}
+                    to={language === 'lt' ? '/services' : `/${language}/services`}
                     className="block service-card-link"
                   >
                     <Card
@@ -638,14 +633,14 @@ const Home = () => {
             className="text-center mt-16"
           >
             <FlowButton
-              href={language === 'en' ? '/en/services' : '/services'}
+              href={language === 'lt' ? '/services' : `/${language}/services`}
               text={t('Visos paslaugos', 'All Services', 'Wszystkie usługi', 'Все услуги')}
             />
           </motion.div>
         </div>
       </section>
       {/* Border Services Section */}
-      <section id="border-services" className="relative w-full py-24 overflow-hidden" style={{ contentVisibility: 'auto', zIndex: 10 }}>
+      <section id="border-services" className="relative w-full py-24 overflow-hidden" style={{ zIndex: 10 }}>
         {/* Cards container - positioned above the lines */}
         <div className="relative" style={{ position: 'relative', zIndex: 10 }}>
           <div className="container mx-auto px-4 relative">
@@ -734,7 +729,7 @@ const Home = () => {
 
 
       {/* FAQ Section */}
-      <section id="faq" className="relative w-full bg-black py-24 overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 800px' }}>
+      <section id="faq" className="relative w-full bg-black py-24 overflow-hidden">
         {/* Background particles effect */}
         <div className="absolute inset-0">
           <Particles
@@ -791,7 +786,7 @@ const Home = () => {
       </section>
 
       {/* Contact Form & Footer Section */}
-      <section id="contact-form" className="relative w-full pt-24 pb-0 mb-0 overflow-hidden" style={{ contentVisibility: 'auto', zIndex: 10 }}>
+      <section id="contact-form" className="relative w-full pt-24 pb-0 mb-0 overflow-hidden" style={{ zIndex: 10 }}>
         {/* Cards container - positioned above the lines */}
         <div className="relative mb-0 pb-0" style={{ position: 'relative', zIndex: 10 }}>
         <div className="container mx-auto px-4 pb-0 mb-0 relative z-10">

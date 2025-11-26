@@ -6,9 +6,9 @@ const CONNECTIONS = [
   { id: 'statistics', x: 72, color: '#F2CA50', type: 'cross-through' },     // Topmost (Inner)
   { id: 'about', x: 64, color: '#F2CA50', type: 'center-path' },
   { id: 'services', x: 56, color: '#F2CA50', type: 'heading-connect', headingId: 'services-heading' },
-  { id: 'border-services', x: 48, color: '#F2CA50', type: 'heading-to-cards' },
+  { id: 'border-services', x: 48, color: '#F2CA50', type: 'heading-connect', headingId: 'border-services-heading' },
   { id: 'faq', x: 40, color: '#F2CA50', type: 'heading-connect', headingId: 'faq-heading' },
-  { id: 'contact-form', x: 32, color: '#F2CA50', type: 'heading-to-cards-contact', headingId: 'contact-heading' },   // Bottommost (Outer)
+  { id: 'contact-form', x: 32, color: '#F2CA50', type: 'heading-connect', headingId: 'contact-heading' },   // Bottommost (Outer)
 ];
 
 export default function DecorativeLines() {
@@ -78,21 +78,20 @@ export default function DecorativeLines() {
         // Logic for about section: 
         // 1. Down to section top
         // 2. Right to screen center
-        // 3. Down to card vertical center
-        // 4. Right to card
-        const card = document.getElementById('about-card');
-        if (card) {
-            const cardRect = card.getBoundingClientRect();
-            const cardCenterY = (cardRect.top + cardRect.height / 2 + scrollTop) - wrapperTop;
-            const cardLeft = (cardRect.left + scrollLeft) - wrapperLeft;
+        // 3. Down to heading vertical center
+        // 4. Right to heading
+        const heading = document.getElementById('about-heading');
+        if (heading) {
+            const headingRect = heading.getBoundingClientRect();
+            const headingCenterY = (headingRect.top + headingRect.height / 2 + scrollTop) - wrapperTop;
+            const headingLeft = (headingRect.left + scrollLeft) - wrapperLeft;
             const screenCenter = (window.innerWidth / 2) - wrapperLeft; // Center relative to wrapper
             
             // Start Y: We can use the top of the section plus some padding to make the turn
-            // Or maybe align the turn with the start of the heading or image?
             // Let's use absoluteTop (section top) + 100px as the turn point for the first horizontal segment
             const firstTurnY = absoluteTop - wrapperTop + 100;
 
-            return `M ${conn.x} 0 L ${conn.x} ${firstTurnY} L ${screenCenter} ${firstTurnY} L ${screenCenter} ${cardCenterY} L ${cardLeft} ${cardCenterY}`;
+            return `M ${conn.x} 0 L ${conn.x} ${firstTurnY} L ${screenCenter} ${firstTurnY} L ${screenCenter} ${headingCenterY} L ${headingLeft} ${headingCenterY}`;
         } else {
              // Fallback
              targetY = absoluteTop - wrapperTop + 100;
@@ -129,104 +128,6 @@ export default function DecorativeLines() {
            return `M ${conn.x} 0 L ${conn.x} ${targetY} L ${targetX} ${targetY}`;
         }
       
-      } else if (conn.type === 'heading-to-cards') {
-         // Logic for Border Services: 
-         // 1. Down to heading vertical center
-         // 2. Right to heading horizontal center (passing behind)
-         // 3. Down to cards vertical center
-         // 4. Spanning all cards horizontally
-         
-         const heading = document.getElementById('border-services-heading');
-         // Use element (the section) to find the grid
-         const gridElement = element.querySelector('.grid');
-         
-         if (heading && gridElement) {
-             const headingRect = heading.getBoundingClientRect();
-             const gridRect = gridElement.getBoundingClientRect();
-             
-             // Improved centering logic for heading
-             const style = window.getComputedStyle(heading);
-             const paddingTop = parseFloat(style.paddingTop);
-             const paddingBottom = parseFloat(style.paddingBottom);
-             const contentHeight = headingRect.height - paddingTop - paddingBottom;
-             const headingCenterY = (headingRect.top + paddingTop + contentHeight / 2 + scrollTop) - wrapperTop;
-             
-             const headingLeft = (headingRect.left + scrollLeft) - wrapperLeft;
-             const headingCenterX = (headingRect.left + headingRect.width / 2 + scrollLeft) - wrapperLeft;
-             
-             const cardsCenterY = (gridRect.top + gridRect.height / 2 + scrollTop) - wrapperTop;
-             const gridLeft = (gridRect.left + scrollLeft) - wrapperLeft;
-             const gridRight = (gridRect.right + scrollLeft) - wrapperLeft;
-             
-             // Path:
-             // 1. Start -> Heading Level (connect to left edge like services)
-             // 2. Heading Level Left -> Heading Center (passing behind)
-             // 3. Heading Center -> Cards Level
-             // 4. Cards Level Left -> Cards Level Right
-             
-             return `M ${conn.x} 0 
-                     L ${conn.x} ${headingCenterY} 
-                     L ${headingLeft} ${headingCenterY}
-                     M ${headingLeft} ${headingCenterY}
-                     L ${headingCenterX} ${headingCenterY} 
-                     L ${headingCenterX} ${cardsCenterY}
-                     M ${gridLeft} ${cardsCenterY}
-                     L ${gridRight} ${cardsCenterY}`;
-         } else {
-            // Fallback
-            targetY = absoluteTop - wrapperTop + 100;
-            targetX = (window.innerWidth * 0.1) + conn.x + 50;
-            return `M ${conn.x} 0 L ${conn.x} ${targetY} L ${targetX} ${targetY}`;
-         }
-
-      } else if (conn.type === 'heading-to-cards-contact') {
-         // Logic for Contact section: 
-         // Similar to border services but uses specific selectors for contact section layout
-         
-         const headingId = (conn as any).headingId;
-         const heading = headingId ? document.getElementById(headingId) : null;
-         // The contact section has a grid with 2 columns: Form + Info
-         const gridElement = element.querySelector('.grid');
-         
-         if (heading && gridElement) {
-             const headingRect = heading.getBoundingClientRect();
-             const gridRect = gridElement.getBoundingClientRect();
-             
-             // Improved centering logic for heading
-             const style = window.getComputedStyle(heading);
-             const paddingTop = parseFloat(style.paddingTop);
-             const paddingBottom = parseFloat(style.paddingBottom);
-             const contentHeight = headingRect.height - paddingTop - paddingBottom;
-             const headingCenterY = (headingRect.top + paddingTop + contentHeight / 2 + scrollTop) - wrapperTop;
-             
-             const headingLeft = (headingRect.left + scrollLeft) - wrapperLeft;
-             const headingCenterX = (headingRect.left + headingRect.width / 2 + scrollLeft) - wrapperLeft;
-             
-             const cardsCenterY = (gridRect.top + gridRect.height / 2 + scrollTop) - wrapperTop;
-             const gridLeft = (gridRect.left + scrollLeft) - wrapperLeft;
-             const gridRight = (gridRect.right + scrollLeft) - wrapperLeft;
-             
-             // Path:
-             // 1. Start -> Heading Level (connect to left edge)
-             // 2. Heading Level Left -> Heading Center (passing behind)
-             // 3. Heading Center -> Cards Level
-             // 4. Cards Level Left -> Cards Level Right (connecting both form and contact info)
-             
-             return `M ${conn.x} 0 
-                     L ${conn.x} ${headingCenterY} 
-                     L ${headingLeft} ${headingCenterY}
-                     M ${headingLeft} ${headingCenterY}
-                     L ${headingCenterX} ${headingCenterY} 
-                     L ${headingCenterX} ${cardsCenterY}
-                     M ${gridLeft} ${cardsCenterY}
-                     L ${gridRight} ${cardsCenterY}`;
-         } else {
-            // Fallback
-            targetY = absoluteTop - wrapperTop + 100;
-            targetX = (window.innerWidth * 0.1) + conn.x + 50;
-            return `M ${conn.x} 0 L ${conn.x} ${targetY} L ${targetX} ${targetY}`;
-         }
-
       } else {
         // Standard logic: Connect to start of container
         targetY = absoluteTop - wrapperTop + 100;

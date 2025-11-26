@@ -1,7 +1,7 @@
 'use client';
 import { CaretRight } from '@phosphor-icons/react';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { scrollToSection } from '@/utils/scrollToSection';
 
 interface FlowButtonProps {
@@ -27,6 +27,7 @@ export function FlowButton({
   type = 'button',
   disabled = false
 }: FlowButtonProps) {
+  const location = useLocation();
   const content = children || text || "Modern Button";
   
   const sizeClasses = size === 'large'
@@ -48,9 +49,10 @@ export function FlowButton({
   // Determine if href is internal (starts with /) or external/hash link
   const isHashLink = href && (href.startsWith('#') || href.includes('#'));
   const isExternalLink = href && (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('tel:') || href.startsWith('mailto:'));
-  const isInternal = href && href.startsWith('/') && !isHashLink && !isExternalLink;
+  // Treat internal path links (even with hashes) as internal for SPA navigation
+  const isInternal = href && href.startsWith('/') && !isExternalLink;
   
-  // Use Link for internal routes (no hashes), 'a' for hash links and external, 'button' for no href
+  // Use Link for internal routes, 'a' for external, 'button' for no href
   let Component: any = 'button';
   let componentProps: any = {
     ...(onClick && { onClick }),
@@ -65,6 +67,32 @@ export function FlowButton({
       componentProps = {
         ...componentProps,
         to: href,
+        ...(isHashLink && {
+          onClick: (e: React.MouseEvent) => {
+            const [pathPart, hashPart] = href.split('#');
+            // Check if we are on the same page (ignoring trailing slashes)
+            const currentPath = location.pathname.endsWith('/') && location.pathname.length > 1 
+              ? location.pathname.slice(0, -1) 
+              : location.pathname;
+            const targetPath = pathPart.endsWith('/') && pathPart.length > 1
+              ? pathPart.slice(0, -1)
+              : pathPart;
+              
+            const isSamePage = targetPath === currentPath;
+
+            if (isSamePage) {
+              e.preventDefault();
+              if (hashPart) {
+                // Update URL
+                window.history.pushState({}, '', href);
+                // Scroll to section with reduced offset
+                scrollToSection(hashPart, 50);
+              }
+            }
+            // If not same page, Link handles navigation
+            if (onClick) onClick();
+          }
+        })
       };
     } else {
       Component = 'a';
@@ -73,15 +101,17 @@ export function FlowButton({
         href,
         ...(isHashLink && {
           onClick: (e: React.MouseEvent) => {
-            e.preventDefault();
-            const hash = href.split('#')[1];
-            if (hash) {
-              // Update URL
-              window.history.pushState({}, '', href);
-              // Scroll to section with reduced offset for more downward scroll
-              scrollToSection(hash, 50);
+            // For pure hash links (href="#something") or external hash links
+            if (href.startsWith('#')) {
+              e.preventDefault();
+              const hash = href.substring(1);
+              if (hash) {
+                window.history.pushState({}, '', href);
+                scrollToSection(hash, 50);
+              }
+              if (onClick) onClick();
             }
-            if (onClick) onClick();
+            // For external links with hash, let browser handle it
           }
         })
       };

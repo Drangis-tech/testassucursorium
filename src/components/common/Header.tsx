@@ -23,7 +23,7 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
     {
       label: t('Apie mus', 'About Us', 'O nas', 'О нас'),
       ariaLabel: t('Sužinoti apie mus', 'Learn about us', 'Dowiedz się o nas', 'Узнать о нас'),
-      link: '#' + t('apie-mus', 'about-us', 'o-nas', 'o-nas'),
+      link: basePath + '/#' + t('apie-mus', 'about-us', 'o-nas', 'o-nas'),
     },
     {
       label: t('Paslaugos', 'Services', 'Usługi', 'Услуги'),
@@ -32,11 +32,11 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
       children: [
         {
           label: t('Vidinėse muitinėse', 'Internal Customs', 'Wewnętrzne urzędy celne', 'Во внутренних таможнях'),
-          link: '#' + t('paslaugos-vidinese-muitinese', 'internal-customs-services', 'wewnetrzne-uslugi-celne', 'vnutrennie-tamozhennye-uslugi')
+          link: basePath + '/#' + t('paslaugos-vidinese-muitinese', 'internal-customs-services', 'wewnetrzne-uslugi-celne', 'vnutrennie-tamozhennye-uslugi')
         },
         {
           label: t('Pasieniuose', 'At Borders', 'Na granicach', 'На границах'),
-          link: '#' + t('paslaugos-pasieniuose', 'border-services', 'uslugi-na-granicy', 'uslugi-na-granice')
+          link: basePath + '/#' + t('paslaugos-pasieniuose', 'border-services', 'uslugi-na-granicy', 'uslugi-na-granice')
         },
         {
           label: t('Visos', 'All', 'Wszystkie', 'Все'),
@@ -47,12 +47,12 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
     {
       label: t('DUK', 'FAQ', 'FAQ', 'FAQ'),
       ariaLabel: t('Dažniausiai užduodami klausimai', 'Frequently asked questions', 'Często zadawane pytania', 'Часто задаваемые вопросы'),
-      link: '#' + t('DUK', 'faq', 'faq', 'faq'),
+      link: basePath + '/#' + t('DUK', 'faq', 'faq', 'faq'),
     },
     {
       label: t('Kontaktai', 'Contacts', 'Kontakt', 'Контакты'),
       ariaLabel: t('Susisiekite su mumis', 'Contact us', 'Skontaktuj się z nami', 'Свяжитесь с нами'),
-      link: '#' + t('kontaktai', 'contacts', 'kontakt', 'kontakty'),
+      link: basePath + '/#' + t('kontaktai', 'contacts', 'kontakt', 'kontakty'),
     },
   ];
 

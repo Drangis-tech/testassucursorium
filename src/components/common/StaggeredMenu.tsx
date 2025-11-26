@@ -1,6 +1,6 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { CaretDown } from '@phosphor-icons/react';
 import { scrollToSection } from '@/utils/scrollToSection';
 import './StaggeredMenu.css';
@@ -82,6 +82,51 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   const busyRef = useRef(false);
   const itemEntranceTweenRef = useRef<gsap.core.Tween | null>(null);
   const [expandedItems, setExpandedItems] = useState<Record<number, boolean>>({});
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleNavigation = (e: React.MouseEvent, link: string) => {
+    e.preventDefault();
+    
+    // Handle external links
+    if (link.startsWith('http') || link.startsWith('mailto:') || link.startsWith('tel:')) {
+      window.location.href = link;
+      if (openRef.current) toggleMenu();
+      return;
+    }
+
+    // Parse link
+    const hashIndex = link.indexOf('#');
+    const targetPath = hashIndex !== -1 ? link.substring(0, hashIndex) : link;
+    const hash = hashIndex !== -1 ? link.substring(hashIndex + 1) : '';
+
+    // Normalize paths (remove trailing slash for comparison, unless root)
+    const normalize = (p: string) => (p.length > 1 && p.endsWith('/')) ? p.slice(0, -1) : p;
+    const currentPath = normalize(location.pathname);
+    // If targetPath is empty (e.g. "#hash"), it implies current path
+    const targetPathNorm = targetPath === '' ? currentPath : normalize(targetPath);
+    
+    const isSamePage = targetPathNorm === currentPath;
+
+    if (isSamePage) {
+      if (hash) {
+        // Update URL
+        window.history.pushState({}, '', link);
+        // Close menu
+        if (openRef.current) toggleMenu();
+        // Scroll with delay
+        setTimeout(() => scrollToSection(hash, 50), 500);
+      } else {
+        // Home link click on home page -> Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (openRef.current) toggleMenu();
+      }
+    } else {
+      // Navigate to new page
+      if (openRef.current) toggleMenu();
+      navigate(link);
+    }
+  };
 
   const toggleItemExpand = (index: number, e: React.MouseEvent) => {
     e.preventDefault();
@@ -398,6 +443,25 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     animateText(target);
   }, [playOpen, playClose, animateIcon, animateColor, animateText, onMenuOpen, onMenuClose]);
 
+  // Close menu when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        openRef.current && 
+        panelRef.current && 
+        !panelRef.current.contains(event.target as Node) &&
+        !toggleBtnRef.current?.contains(event.target as Node)
+      ) {
+        toggleMenu();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [toggleMenu]);
+
   // Restore styles for new items when content changes while menu is open
   useLayoutEffect(() => {
     if (open && panelRef.current) {
@@ -483,12 +547,6 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           <ul className="sm-panel-list" role="list" data-numbering={displayItemNumbering || undefined}>
             {items && items.length ? (
               items.map((it, idx) => {
-                // Determine if link is internal (starts with /) or external/hash link
-                const isHashLink = it.link.startsWith('#') || it.link.includes('#');
-                const isExternal = it.link.startsWith('http://') || it.link.startsWith('https://') || 
-                                   it.link.startsWith('tel:') || it.link.startsWith('mailto:');
-                const isInternal = it.link.startsWith('/') && !isHashLink && !isExternal;
-                
                 const hasChildren = it.children && it.children.length > 0;
                 const isExpanded = expandedItems[idx];
 
@@ -496,84 +554,30 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                   <li className="sm-panel-itemWrap" key={it.label + idx}>
                     <div className="flex flex-col">
                       <div className="flex items-center justify-between">
-                        {isInternal ? (
-                          <Link 
-                            to={it.link} 
-                            className="sm-panel-item" 
-                            aria-label={it.ariaLabel} 
-                            data-index={idx + 1}
-                            onClick={(e) => {
-                              if (hasChildren) {
-                                toggleItemExpand(idx, e);
-                              } else {
-                                // Close menu after clicking
-                                if (openRef.current) {
-                                  toggleMenu();
-                                }
-                              }
-                            }}
-                          >
-                            <span className="sm-panel-itemLabel flex items-center gap-2">
-                              {it.label}
-                              {hasChildren && (
-                                <CaretDown 
-                                  weight="bold" 
-                                  className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
-                                  size={32}
-                                />
-                              )}
-                            </span>
-                          </Link>
-                        ) : (
-                          <a 
-                            className="sm-panel-item" 
-                            href={it.link} 
-                            aria-label={it.ariaLabel} 
-                            data-index={idx + 1}
-                            onClick={(e) => {
-                              if (hasChildren) {
-                                toggleItemExpand(idx, e);
-                              } else {
-                                // Handle hash links (simple check - starts with #)
-                                if (it.link.startsWith('#')) {
-                                  e.preventDefault();
-                                  
-                                  // Get the hash without the #
-                                  const hash = it.link.substring(1);
-                                  
-                                  // Update URL without scrolling (pushState)
-                                  window.history.pushState({}, '', it.link);
-                                  
-                                  // Close menu first
-                                  if (openRef.current) {
-                                    toggleMenu();
-                                  }
-                                  
-                                  // Scroll after menu closes - increased delay for smoother transition
-                                  setTimeout(() => {
-                                    scrollToSection(hash, 50);
-                                  }, 500);
-                                } else {
-                                  // Close menu after clicking (for regular links)
-                                  if (openRef.current) {
-                                    toggleMenu();
-                                  }
-                                }
-                              }
-                            }}
-                          >
-                            <span className="sm-panel-itemLabel flex items-center gap-2">
-                              {it.label}
-                              {hasChildren && (
-                                <CaretDown 
-                                  weight="bold" 
-                                  className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
-                                  size={32}
-                                />
-                              )}
-                            </span>
-                          </a>
-                        )}
+                        <a 
+                          href={it.link}
+                          className="sm-panel-item" 
+                          aria-label={it.ariaLabel} 
+                          data-index={idx + 1}
+                          onClick={(e) => {
+                            if (hasChildren) {
+                              toggleItemExpand(idx, e);
+                            } else {
+                              handleNavigation(e, it.link);
+                            }
+                          }}
+                        >
+                          <span className="sm-panel-itemLabel flex items-center gap-2">
+                            {it.label}
+                            {hasChildren && (
+                              <CaretDown 
+                                weight="bold" 
+                                className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+                                size={32}
+                              />
+                            )}
+                          </span>
+                        </a>
                       </div>
 
                       {/* Submenu */}
@@ -584,45 +588,13 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                           <ul className="flex flex-col gap-2">
                             {it.children!.map((child, childIdx) => (
                               <li key={childIdx}>
-                                {child.link.startsWith('#') ? (
-                                  <a
-                                    href={child.link}
-                                    className="text-2xl font-semibold text-gray-500 hover:text-[#F2CA50] transition-colors duration-200 block py-1 uppercase"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      
-                                      // Get the hash without the #
-                                      const hash = child.link.substring(1);
-                                      
-                                      // Update URL without scrolling (pushState)
-                                      window.history.pushState({}, '', child.link);
-                                      
-                                      // Close menu first
-                                      if (openRef.current) {
-                                        toggleMenu();
-                                      }
-                                      
-                                      // Scroll after menu closes - increased delay for smoother transition
-                                      setTimeout(() => {
-                                        scrollToSection(hash, 50);
-                                      }, 500);
-                                    }}
-                                  >
-                                    {child.label}
-                                  </a>
-                                ) : (
-                                  <Link
-                                    to={child.link}
-                                    className="text-2xl font-semibold text-gray-500 hover:text-[#F2CA50] transition-colors duration-200 block py-1 uppercase"
-                                    onClick={() => {
-                                      if (openRef.current) {
-                                        toggleMenu();
-                                      }
-                                    }}
-                                  >
-                                    {child.label}
-                                  </Link>
-                                )}
+                                <a
+                                  href={child.link}
+                                  className="text-2xl font-semibold text-gray-500 hover:text-[#F2CA50] transition-colors duration-200 block py-1 uppercase"
+                                  onClick={(e) => handleNavigation(e, child.link)}
+                                >
+                                  {child.label}
+                                </a>
                               </li>
                             ))}
                           </ul>
@@ -654,6 +626,11 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                         target="_blank" 
                         rel="noopener noreferrer" 
                         className="sm-socials-link"
+                        onClick={() => {
+                          if (openRef.current) {
+                            toggleMenu();
+                          }
+                        }}
                         style={{
                           fontWeight: isActive ? 'bold' : 'normal',
                           textDecoration: isActive ? 'underline' : 'none',

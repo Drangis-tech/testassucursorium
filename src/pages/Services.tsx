@@ -7,12 +7,30 @@ import { Particles } from '@/components/ui/particles';
 import { DotPattern } from '@/components/ui/dot-pattern';
 import { FlowButton } from '@/components/ui/flow-button';
 import { LineShadowText } from '@/components/ui/line-shadow-text';
+import { SEO } from '@/components/common/SEO';
 
 const Services = () => {
   const { language, t } = useLanguage();
 
+  const seoTitle = t(
+    'Muitinės paslaugos',
+    'Customs Services',
+    'Usługi Celne',
+    'Таможенные услуги'
+  );
+  const seoDescription = t(
+    'Visos muitinės tarpininkavimo paslaugos: importas, eksportas, tranzitas, T1, T2L, muitinės sandėliai.',
+    'All customs brokerage services: import, export, transit, T1, T2L, customs warehouses.',
+    'Wszystkie usługi agencji celnej: import, eksport, tranzyt, T1, T2L, składy celne.',
+    'Все услуги таможенного брокера: импорт, экспорт, транзит, T1, T2L, таможенные склады.'
+  );
+
   return (
     <div className="overflow-hidden">
+      <SEO 
+        title={seoTitle}
+        description={seoDescription}
+      />
       {/* Services Hero Section */}
       <section className="relative w-full bg-black py-24 overflow-hidden">
         {/* Background particles effect */}
