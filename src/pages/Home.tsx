@@ -213,7 +213,7 @@ const Home = () => {
       <DecorativeLines />
 
       {/* Hero Section */}
-      <section className="relative w-full min-h-screen flex items-center justify-center py-20 sm:py-24 md:py-0">
+      <section className="relative w-full min-h-[70dvh] md:min-h-screen flex items-center justify-center py-20 sm:py-24 md:py-0">
         {/* Background - Delayed load to not block first paint */}
         <div className="absolute inset-0 w-full h-full overflow-hidden bg-black">
           <ClientMountWhenVisible rootMargin="0px">
@@ -263,7 +263,7 @@ const Home = () => {
 
 
       {/* Statistics */}
-      <section id="statistics" className="relative w-full py-24 overflow-hidden" style={{ zIndex: 10 }}>
+      <section id="statistics" className="relative w-full py-12 md:py-24 overflow-hidden" style={{ zIndex: 10 }}>
         {/* Cards container - positioned above the lines */}
         <div className="relative" style={{ position: 'relative', zIndex: 10 }}>
           <div className="container mx-auto px-4 relative">
