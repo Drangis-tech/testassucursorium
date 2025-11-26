@@ -4,6 +4,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   z-index: 10000;
   pointer-events: none;
   contain: layout style;
@@ -19,6 +20,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   z-index: 10000;
   overflow: hidden;
 }
@@ -147,6 +149,7 @@
   right: 0;
   width: clamp(550px, 55vw, 700px);
   height: 100vh;
+  height: 100dvh;
   background: white;
   display: flex;
   flex-direction: column;
@@ -372,7 +375,7 @@
     width: 100%;
     left: 0;
     right: 0;
-    padding: 6em 1.5em 2em 1.5em;
+    padding: 6em 1.5em 8em 1.5em;
   }
   
   .sm-prelayers {
