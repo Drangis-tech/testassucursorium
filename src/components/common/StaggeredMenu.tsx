@@ -123,7 +123,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
       }
     } else {
       // Navigate to new page
-      if (openRef.current) toggleMenu();
+      if (openRef.current) toggleMenu(true);
       navigate(link);
     }
   };
@@ -302,7 +302,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     }
   }, [buildOpenTimeline]);
 
-  const playClose = useCallback(() => {
+  const playClose = useCallback((instant = false) => {
     openTlRef.current?.kill();
     openTlRef.current = null;
     itemEntranceTweenRef.current?.kill();
@@ -316,7 +316,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     const offscreen = position === 'left' ? -100 : 100;
     closeTweenRef.current = gsap.to(all, {
       xPercent: offscreen,
-      duration: 0.32,
+      duration: instant ? 0 : 0.32,
       ease: 'power3.in',
       overwrite: 'auto',
       force3D: true,
@@ -340,14 +340,14 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     });
   }, [position]);
 
-  const animateIcon = useCallback((opening: boolean) => {
+  const animateIcon = useCallback((opening: boolean, instant = false) => {
     const icon = iconRef.current;
     if (!icon) return;
     spinTweenRef.current?.kill();
     if (opening) {
       spinTweenRef.current = gsap.to(icon, { 
         rotate: 225, 
-        duration: 0.8, 
+        duration: instant ? 0 : 0.8, 
         ease: 'power4.out', 
         overwrite: 'auto',
         force3D: true
@@ -355,7 +355,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     } else {
       spinTweenRef.current = gsap.to(icon, { 
         rotate: 0, 
-        duration: 0.35, 
+        duration: instant ? 0 : 0.35, 
         ease: 'power3.inOut', 
         overwrite: 'auto',
         force3D: true
@@ -364,7 +364,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   }, []);
 
   const animateColor = useCallback(
-    (opening: boolean) => {
+    (opening: boolean, instant = false) => {
       const btn = toggleBtnRef.current;
       if (!btn) return;
       colorTweenRef.current?.kill();
@@ -372,8 +372,8 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
         const targetColor = opening ? openMenuButtonColor : menuButtonColor;
         colorTweenRef.current = gsap.to(btn, {
           color: targetColor,
-          delay: 0.18,
-          duration: 0.3,
+          delay: instant ? 0 : 0.18,
+          duration: instant ? 0 : 0.3,
           ease: 'power2.out'
         });
       } else {
@@ -394,7 +394,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     }
   }, [changeMenuColorOnOpen, menuButtonColor, openMenuButtonColor]);
 
-  const animateText = useCallback((opening: boolean) => {
+  const animateText = useCallback((opening: boolean, instant = false) => {
     const inner = textInnerRef.current;
     if (!inner) return;
     textCycleAnimRef.current?.kill();
@@ -417,13 +417,13 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     const finalShift = ((lineCount - 1) / lineCount) * 100;
     textCycleAnimRef.current = gsap.to(inner, {
       yPercent: -finalShift,
-      duration: 0.5 + lineCount * 0.07,
+      duration: instant ? 0 : (0.5 + lineCount * 0.07),
       ease: 'power4.out',
       force3D: true
     });
   }, []);
 
-  const toggleMenu = useCallback(() => {
+  const toggleMenu = useCallback((instant = false) => {
     const target = !openRef.current;
     openRef.current = target;
     setOpen(target);
@@ -432,15 +432,15 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
       playOpen();
     } else {
       onMenuClose?.();
-      playClose();
+      playClose(instant);
       // Reset expanded items when closing menu
       setTimeout(() => {
         setExpandedItems({});
-      }, 400);
+      }, instant ? 0 : 400);
     }
-    animateIcon(target);
-    animateColor(target);
-    animateText(target);
+    animateIcon(target, instant);
+    animateColor(target, instant);
+    animateText(target, instant);
   }, [playOpen, playClose, animateIcon, animateColor, animateText, onMenuOpen, onMenuClose]);
 
   // Close menu when clicking outside
@@ -523,7 +523,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
           aria-controls="staggered-menu-panel"
-          onClick={toggleMenu}
+          onClick={() => toggleMenu()}
           type="button"
         >
           <span ref={textWrapRef} className="sm-toggle-textWrap" aria-hidden="true">
@@ -628,7 +628,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                         className="sm-socials-link"
                         onClick={() => {
                           if (openRef.current) {
-                            toggleMenu();
+                            toggleMenu(true);
                           }
                         }}
                         style={{
