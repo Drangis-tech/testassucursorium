@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { SEO } from '@/components/common/SEO';
 import { DotPattern } from '@/components/ui/dot-pattern';
