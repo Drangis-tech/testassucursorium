@@ -14,10 +14,10 @@ const LanguageContext = createContext<LanguageContextValue | null>(null);
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
   const getLanguage = (): Language => {
-    if (location.pathname.startsWith('/en')) return 'en';
+    if (location.pathname.startsWith('/lt')) return 'lt';
     if (location.pathname.startsWith('/pl')) return 'pl';
     if (location.pathname.startsWith('/ru')) return 'ru';
-    return 'lt';
+    return 'en';
   };
 
   const language: Language = getLanguage();

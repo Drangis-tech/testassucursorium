@@ -223,9 +223,9 @@ Projektas paruoštas deployment į:
 ## 📞 Support
 
 Klausimai ar problemos? Kreipkitės:
-- Email: info@customsconsulting.lt
+- Email: info@customsconsulting.eu
 - Tel: +370 1 234 5678
 
 ---
 
-**Built with ❤️ using Framer reference design as blueprint**
+**Built with ❤️ by BRANDFORGE**

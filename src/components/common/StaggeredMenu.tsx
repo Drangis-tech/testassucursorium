@@ -55,7 +55,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   changeMenuColorOnOpen = true,
   accentColor = '#5227FF',
   isFixed = false,
-  currentLanguage = 'lt',
+  currentLanguage = 'en',
   onMenuOpen,
   onMenuClose,
   alwaysShowLogo = false,
@@ -464,7 +464,12 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 
   // Restore styles for new items when content changes while menu is open
   useLayoutEffect(() => {
-    if (open && panelRef.current) {
+    // Only run this if menu is open AND items actually change (length/content)
+    // We shouldn't reset animation just because 'open' state changed
+    if (open && panelRef.current && items) {
+      // Check if we are currently animating opening
+      if (busyRef.current) return;
+
       const numberEls = Array.from(
         panelRef.current.querySelectorAll('.sm-panel-list[data-numbering] .sm-panel-item')
       ) as HTMLElement[];
@@ -478,7 +483,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
         gsap.set(itemEls, { yPercent: 0, rotate: 0, overwrite: true, force3D: true });
       }
     }
-  }, [items, open]);
+  }, [items]); // Removed 'open' from dependencies
 
   return (
     <div
@@ -499,10 +504,10 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
         })()}
       </div>
       <header className="staggered-menu-header" aria-label="Main navigation header">
-        <Link to={currentLanguage === 'lt' ? '/' : `/${currentLanguage}`} className={`sm-logo ${alwaysShowLogo ? 'absolute left-8 top-1/2 -translate-y-1/2' : ''}`} aria-label="Logo" onClick={(e) => {
+        <Link to={currentLanguage === 'en' ? '/' : `/${currentLanguage}`} className={`sm-logo ${alwaysShowLogo ? 'absolute left-8 top-1/2 -translate-y-1/2' : ''}`} aria-label="Logo" onClick={(e) => {
           // If already on homepage, scroll to top
           const path = window.location.pathname;
-          const isHome = path === '/' || path === `/${currentLanguage}` || (currentLanguage === 'lt' && path === '/');
+          const isHome = path === '/' || path === `/${currentLanguage}` || (currentLanguage === 'en' && path === '/');
           if (isHome) {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -551,9 +556,9 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                 const isExpanded = expandedItems[idx];
 
                 return (
-                  <li className="sm-panel-itemWrap" key={it.label + idx}>
+                  <li key={it.label + idx}>
                     <div className="flex flex-col">
-                      <div className="flex items-center justify-between">
+                      <div className="sm-panel-itemWrap">
                         <a 
                           href={it.link}
                           className="sm-panel-item" 
@@ -567,7 +572,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                             }
                           }}
                         >
-                          <span className="sm-panel-itemLabel flex items-center gap-2">
+                          <span className="sm-panel-itemLabel inline-flex items-center gap-2">
                             {it.label}
                             {hasChildren && (
                               <CaretDown 
@@ -605,10 +610,12 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                 );
               })
             ) : (
-              <li className="sm-panel-itemWrap" aria-hidden="true">
-                <span className="sm-panel-item">
-                  <span className="sm-panel-itemLabel">No items</span>
-                </span>
+              <li aria-hidden="true">
+                <div className="sm-panel-itemWrap">
+                  <span className="sm-panel-item">
+                    <span className="sm-panel-itemLabel">No items</span>
+                  </span>
+                </div>
               </li>
             )}
           </ul>

@@ -7,6 +7,7 @@ import { ToastProvider, useToast } from '@/hooks/useToast';
 import Header from '@/components/common/Header';
 import Home from '@/pages/Home';
 import Services from '@/pages/Services';
+import PrivacyPolicy from '@/pages/PrivacyPolicy';
 import WhatsAppButton from '@/components/common/WhatsAppButton';
 import TelegramButton from '@/components/common/TelegramButton';
 import ViberButton from '@/components/common/ViberButton';
@@ -38,12 +39,16 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/services" element={<Services />} />
-          <Route path="/en" element={<Home />} />
-          <Route path="/en/services" element={<Services />} />
+          <Route path="/lt" element={<Home />} />
+          <Route path="/lt/services" element={<Services />} />
           <Route path="/pl" element={<Home />} />
           <Route path="/pl/services" element={<Services />} />
           <Route path="/ru" element={<Home />} />
           <Route path="/ru/services" element={<Services />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/lt/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/pl/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/ru/privacy-policy" element={<PrivacyPolicy />} />
         </Routes>
       </main>
       <ViberButton isMenuOpen={isMenuOpen} />

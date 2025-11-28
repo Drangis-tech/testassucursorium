@@ -1,91 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  <!-- Lithuanian (Default) -->
+  <!-- English (Default) -->
   <url>
-    <loc>https://customsconsulting.lt/</loc>
-    <lastmod>2025-11-26</lastmod>
+    <loc>https://customsconsulting.eu/</loc>
+    <lastmod>2025-11-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="lt" href="https://customsconsulting.lt/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://customsconsulting.lt/en" />
-    <xhtml:link rel="alternate" hreflang="pl" href="https://customsconsulting.lt/pl" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://customsconsulting.lt/ru" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://customsconsulting.eu/" />
+    <xhtml:link rel="alternate" hreflang="lt" href="https://customsconsulting.eu/lt" />
+    <xhtml:link rel="alternate" hreflang="pl" href="https://customsconsulting.eu/pl" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://customsconsulting.eu/ru" />
   </url>
   <url>
-    <loc>https://customsconsulting.lt/services</loc>
-    <lastmod>2025-11-26</lastmod>
+    <loc>https://customsconsulting.eu/services</loc>
+    <lastmod>2025-11-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="lt" href="https://customsconsulting.lt/services" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://customsconsulting.lt/en/services" />
-    <xhtml:link rel="alternate" hreflang="pl" href="https://customsconsulting.lt/pl/services" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://customsconsulting.lt/ru/services" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://customsconsulting.eu/services" />
+    <xhtml:link rel="alternate" hreflang="lt" href="https://customsconsulting.eu/lt/services" />
+    <xhtml:link rel="alternate" hreflang="pl" href="https://customsconsulting.eu/pl/services" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://customsconsulting.eu/ru/services" />
   </url>
 
-  <!-- English -->
+  <!-- Lithuanian -->
   <url>
-    <loc>https://customsconsulting.lt/en</loc>
-    <lastmod>2025-11-26</lastmod>
+    <loc>https://customsconsulting.eu/lt</loc>
+    <lastmod>2025-11-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="lt" href="https://customsconsulting.lt/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://customsconsulting.lt/en" />
-    <xhtml:link rel="alternate" hreflang="pl" href="https://customsconsulting.lt/pl" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://customsconsulting.lt/ru" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://customsconsulting.eu/" />
+    <xhtml:link rel="alternate" hreflang="lt" href="https://customsconsulting.eu/lt" />
+    <xhtml:link rel="alternate" hreflang="pl" href="https://customsconsulting.eu/pl" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://customsconsulting.eu/ru" />
   </url>
   <url>
-    <loc>https://customsconsulting.lt/en/services</loc>
-    <lastmod>2025-11-26</lastmod>
+    <loc>https://customsconsulting.eu/lt/services</loc>
+    <lastmod>2025-11-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="lt" href="https://customsconsulting.lt/services" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://customsconsulting.lt/en/services" />
-    <xhtml:link rel="alternate" hreflang="pl" href="https://customsconsulting.lt/pl/services" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://customsconsulting.lt/ru/services" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://customsconsulting.eu/services" />
+    <xhtml:link rel="alternate" hreflang="lt" href="https://customsconsulting.eu/lt/services" />
+    <xhtml:link rel="alternate" hreflang="pl" href="https://customsconsulting.eu/pl/services" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://customsconsulting.eu/ru/services" />
   </url>
 
   <!-- Polish -->
   <url>
-    <loc>https://customsconsulting.lt/pl</loc>
-    <lastmod>2025-11-26</lastmod>
+    <loc>https://customsconsulting.eu/pl</loc>
+    <lastmod>2025-11-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="lt" href="https://customsconsulting.lt/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://customsconsulting.lt/en" />
-    <xhtml:link rel="alternate" hreflang="pl" href="https://customsconsulting.lt/pl" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://customsconsulting.lt/ru" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://customsconsulting.eu/" />
+    <xhtml:link rel="alternate" hreflang="lt" href="https://customsconsulting.eu/lt" />
+    <xhtml:link rel="alternate" hreflang="pl" href="https://customsconsulting.eu/pl" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://customsconsulting.eu/ru" />
   </url>
   <url>
-    <loc>https://customsconsulting.lt/pl/services</loc>
-    <lastmod>2025-11-26</lastmod>
+    <loc>https://customsconsulting.eu/pl/services</loc>
+    <lastmod>2025-11-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="lt" href="https://customsconsulting.lt/services" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://customsconsulting.lt/en/services" />
-    <xhtml:link rel="alternate" hreflang="pl" href="https://customsconsulting.lt/pl/services" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://customsconsulting.lt/ru/services" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://customsconsulting.eu/services" />
+    <xhtml:link rel="alternate" hreflang="lt" href="https://customsconsulting.eu/lt/services" />
+    <xhtml:link rel="alternate" hreflang="pl" href="https://customsconsulting.eu/pl/services" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://customsconsulting.eu/ru/services" />
   </url>
 
   <!-- Russian -->
   <url>
-    <loc>https://customsconsulting.lt/ru</loc>
-    <lastmod>2025-11-26</lastmod>
+    <loc>https://customsconsulting.eu/ru</loc>
+    <lastmod>2025-11-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="lt" href="https://customsconsulting.lt/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://customsconsulting.lt/en" />
-    <xhtml:link rel="alternate" hreflang="pl" href="https://customsconsulting.lt/pl" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://customsconsulting.lt/ru" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://customsconsulting.eu/" />
+    <xhtml:link rel="alternate" hreflang="lt" href="https://customsconsulting.eu/lt" />
+    <xhtml:link rel="alternate" hreflang="pl" href="https://customsconsulting.eu/pl" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://customsconsulting.eu/ru" />
   </url>
   <url>
-    <loc>https://customsconsulting.lt/ru/services</loc>
-    <lastmod>2025-11-26</lastmod>
+    <loc>https://customsconsulting.eu/ru/services</loc>
+    <lastmod>2025-11-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="lt" href="https://customsconsulting.lt/services" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://customsconsulting.lt/en/services" />
-    <xhtml:link rel="alternate" hreflang="pl" href="https://customsconsulting.lt/pl/services" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://customsconsulting.lt/ru/services" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://customsconsulting.eu/services" />
+    <xhtml:link rel="alternate" hreflang="lt" href="https://customsconsulting.eu/lt/services" />
+    <xhtml:link rel="alternate" hreflang="pl" href="https://customsconsulting.eu/pl/services" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://customsconsulting.eu/ru/services" />
   </url>
 </urlset>
+
+
+
 

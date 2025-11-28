@@ -235,11 +235,11 @@ const Services = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <FlowButton
-                  href={language === 'lt' ? '/#contact-form' : `/${language}/#contact-form`}
+                  href={language === 'en' ? '/#contact-form' : `/${language}/#contact-form`}
                   text={t('Pateikti užklausą', 'Submit Inquiry', 'Wyślij zapytanie', 'Отправить запрос')}
                 />
                 <FlowButton
-                  href="tel:+37012345678"
+                  href="tel:+37065088892"
                   variant="outline"
                   text={t('Skambinti dabar', 'Call Now', 'Zadzwoń teraz', 'Позвонить сейчас')}
                 />

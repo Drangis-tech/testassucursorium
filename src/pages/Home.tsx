@@ -536,7 +536,7 @@ const Home = () => {
                 return (
                   <Link
                     key={service.id}
-                    to={language === 'lt' ? '/services' : `/${language}/services`}
+                    to={language === 'en' ? '/services' : `/${language}/services`}
                     className="block service-card-link"
                   >
                     <Card
@@ -583,7 +583,7 @@ const Home = () => {
                 return (
                   <Link
                     key={service.id}
-                    to={language === 'lt' ? '/services' : `/${language}/services`}
+                    to={language === 'en' ? '/services' : `/${language}/services`}
                     className="block service-card-link"
                   >
                     <Card
@@ -633,7 +633,7 @@ const Home = () => {
             className="text-center mt-16"
           >
             <FlowButton
-              href={language === 'lt' ? '/services' : `/${language}/services`}
+              href={language === 'en' ? '/services' : `/${language}/services`}
               text={t('Visos paslaugos', 'All Services', 'Wszystkie usługi', 'Все услуги')}
             />
           </motion.div>
@@ -856,10 +856,10 @@ const Home = () => {
                     <div>
                       <p className="text-sm text-gray-400 mb-2">{t('Telefonas', 'Phone', 'Telefon', 'Телефон')}</p>
                       <a 
-                        href="tel:+37012345678" 
+                        href="tel:+37065088892" 
                         className="text-3xl md:text-4xl font-baloo font-bold text-white hover:text-[#F2CA50] transition-colors duration-300 inline-block"
                       >
-                        +370 123 45678
+                        +370 650 88892
                       </a>
                     </div>
 
@@ -867,10 +867,10 @@ const Home = () => {
                     <div>
                       <p className="text-sm text-gray-400 mb-2">{t('El. paštas', 'Email', 'E-mail', 'Эл. почта')}</p>
                       <a 
-                        href="mailto:info@customsconsulting.lt" 
+                        href="mailto:info@customsconsulting.eu" 
                         className="text-3xl md:text-4xl font-baloo font-bold text-white hover:text-[#F2CA50] transition-colors duration-300 break-all inline-block"
                       >
-                        info@customsconsulting.lt
+                        info@customsconsulting.eu
                       </a>
                     </div>
 
@@ -900,14 +900,34 @@ const Home = () => {
 
           {/* Bottom Footer Bar */}
           <div className="border-t border-zinc-800/50 mt-16 pt-8 pb-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400">
-            <div className="text-center md:text-left">
+            {/* Left: Made by */}
+            <div className="flex items-center gap-2">
+              <span>Made by:</span>
+              <a 
+                href="https://www.brandforge.lt/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:opacity-80 transition-opacity duration-300"
+              >
+                <img 
+                  src="/brandforge.png" 
+                  alt="BrandForge" 
+                  className="h-6 w-auto"
+                />
+              </a>
+            </div>
+
+            {/* Middle: Copyright */}
+            <div className="text-center">
               © {new Date().getFullYear()} UAB "Customs Consulting".{' '}
               {t('Visos teisės saugomos.', 'All rights reserved.', 'Wszelkie prawa zastrzeżone.', 'Все права защищены.')}
             </div>
+
+            {/* Right: Privacy Policy */}
             <div className="flex gap-6">
-              <a href="#" className="hover:text-[#F2CA50] transition-colors duration-300">
+              <Link to={language === 'en' ? '/privacy-policy' : `/${language}/privacy-policy`} className="hover:text-[#F2CA50] transition-colors duration-300">
                 {t('Privatumo politika', 'Privacy Policy', 'Polityka prywatności', 'Политика конфиденциальности')}
-              </a>
+              </Link>
             </div>
           </div>
         </div>

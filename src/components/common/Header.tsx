@@ -12,7 +12,7 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const basePath = language === 'lt' ? '' : '/' + language;
+  const basePath = language === 'en' ? '' : '/' + language;
 
   const menuItems: StaggeredMenuItem[] = [
     {
@@ -59,9 +59,9 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
   const switchLanguage = (targetLang: string) => {
     const currentPath = location.pathname;
     // Remove any existing language prefix
-    const pathWithoutLang = currentPath.replace(/^\/(en|ru|pl)/, '');
+    const pathWithoutLang = currentPath.replace(/^\/(lt|ru|pl)/, '');
     
-    if (targetLang === 'lt') {
+    if (targetLang === 'en') {
       navigate(pathWithoutLang || '/');
     } else {
       navigate(`/${targetLang}${pathWithoutLang}`);
@@ -70,12 +70,12 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
 
   const socialItems = [
     {
-      label: 'LT',
-      link: '#lang-lt',
-    },
-    {
       label: 'EN',
       link: '#lang-en',
+    },
+    {
+      label: 'LT',
+      link: '#lang-lt',
     },
     {
       label: 'RU',
@@ -99,7 +99,7 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
     }
   };
 
-  const isServicesPage = location.pathname.includes('services');
+  const shouldShowLogo = location.pathname.includes('services') || location.pathname.includes('privacy-policy');
 
   return (
     <div 
@@ -122,7 +122,7 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
         currentLanguage={language}
         onMenuOpen={() => onMenuToggle?.(true)}
         onMenuClose={() => onMenuToggle?.(false)}
-        alwaysShowLogo={isServicesPage}
+        alwaysShowLogo={shouldShowLogo}
         socialTitle={t('Kalbos', 'Languages', 'Języki', 'Языки')}
       />
     </div>

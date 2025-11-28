@@ -13,9 +13,9 @@ export const SEO = ({ title, description, image, article }: SEOProps) => {
   const { language } = useLanguage();
   const location = useLocation();
   
-  const siteUrl = 'https://customsconsulting.lt';
+  const siteUrl = 'https://customsconsulting.eu';
   const defaultTitle = 'Customs Consulting - Muitinės Tarpininkas';
-  const defaultDescription = 'UAB Customs Consulting - Patikimas muitinės tarpininkas. Profesionalios muitinės paslaugos Lietuvoje, Europoje ir Azijoje.';
+  const defaultDescription = 'UAB Customs Consulting - Patikimas muitinės tarpininkas. Profesionalios muitinės paslaugos Lietuvoje.';
   const defaultImage = `${siteUrl}/logo.png`;
 
   const fullTitle = title ? `${title} | Customs Consulting` : defaultTitle;
@@ -51,8 +51,8 @@ export const SEO = ({ title, description, image, article }: SEOProps) => {
 
   // Clean path for hreflangs
   const getCleanPath = (path: string) => {
-    if (path === '/' || path === '/en' || path === '/pl' || path === '/ru') return '/';
-    const clean = path.replace(/^\/(en|pl|ru)/, '');
+    if (path === '/' || path === '/lt' || path === '/pl' || path === '/ru') return '/';
+    const clean = path.replace(/^\/(lt|pl|ru)/, '');
     return clean || '/';
   };
 
@@ -85,7 +85,7 @@ export const SEO = ({ title, description, image, article }: SEOProps) => {
     // Hreflangs
     const cleanPath = getCleanPath(currentPath);
     const getUrlForLang = (lang: string) => {
-      if (lang === 'lt') return `${siteUrl}${cleanPath === '/' ? '' : cleanPath}`;
+      if (lang === 'en') return `${siteUrl}${cleanPath === '/' ? '' : cleanPath}`;
       return `${siteUrl}/${lang}${cleanPath === '/' ? '' : cleanPath}`;
     };
 
@@ -93,7 +93,7 @@ export const SEO = ({ title, description, image, article }: SEOProps) => {
     updateLink('alternate', getUrlForLang('en'), 'en');
     updateLink('alternate', getUrlForLang('pl'), 'pl');
     updateLink('alternate', getUrlForLang('ru'), 'ru');
-    updateLink('alternate', getUrlForLang('lt'), 'x-default');
+    updateLink('alternate', getUrlForLang('en'), 'x-default');
 
   }, [fullTitle, metaDescription, metaImage, currentPath, language, article, siteUrl]);
 

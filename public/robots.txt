@@ -1,5 +1,8 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://customsconsulting.lt/sitemap.xml
+Sitemap: https://customsconsulting.eu/sitemap.xml
+
+
+
 

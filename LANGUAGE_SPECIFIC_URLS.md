@@ -6,19 +6,19 @@ The navigation now uses **language-specific hash URLs** while keeping the actual
 
 ## 🌍 URL Structure by Language
 
-### Lithuanian (Default)
-- About Us: `/#apie-mus` → scrolls to section `id="about"`
-- Services (Internal): `/#paslaugos-vidinese-muitinese` → scrolls to section `id="services"`
-- Services (Border): `/#paslaugos-pasieniuose` → scrolls to section `id="border-services"`
-- FAQ: `/#DUK` → scrolls to section `id="faq"`
-- Contacts: `/#kontaktai` → scrolls to section `id="contact-form"`
+### English (Default)
+- About Us: `/#about-us` → scrolls to section `id="about"`
+- Services (Internal): `/#internal-customs-services` → scrolls to section `id="services"`
+- Services (Border): `/#border-services` → scrolls to section `id="border-services"`
+- FAQ: `/#faq` → scrolls to section `id="faq"`
+- Contacts: `/#contacts` → scrolls to section `id="contact-form"`
 
-### English
-- About Us: `/en/#about-us` → scrolls to section `id="about"`
-- Services (Internal): `/en/#internal-customs-services` → scrolls to section `id="services"`
-- Services (Border): `/en/#border-services` → scrolls to section `id="border-services"`
-- FAQ: `/en/#faq` → scrolls to section `id="faq"`
-- Contacts: `/en/#contacts` → scrolls to section `id="contact-form"`
+### Lithuanian
+- About Us: `/lt/#apie-mus` → scrolls to section `id="about"`
+- Services (Internal): `/lt/#paslaugos-vidinese-muitinese` → scrolls to section `id="services"`
+- Services (Border): `/lt/#paslaugos-pasieniuose` → scrolls to section `id="border-services"`
+- FAQ: `/lt/#DUK` → scrolls to section `id="faq"`
+- Contacts: `/lt/#kontaktai` → scrolls to section `id="contact-form"`
 
 ### Russian
 - About Us: `/ru/#o-nas` → scrolls to section `id="about"`
@@ -82,14 +82,14 @@ This ensures **DecorativeLines.tsx continues to work** without any changes!
 
 ### What You'll See in Browser:
 
-**Lithuanian Page:**
-1. Click "Apie mus" → URL changes to `/#apie-mus`
-2. Console: `[ScrollToSection] Hash: #apie-mus -> Section ID: #about`
+**English Page:**
+1. Click "About Us" → URL changes to `/#about-us`
+2. Console: `[ScrollToSection] Hash: #about-us -> Section ID: #about`
 3. Page scrolls to About section
 
-**English Page:**
-1. Click "About Us" → URL changes to `/en/#about-us`
-2. Console: `[ScrollToSection] Hash: #about-us -> Section ID: #about`
+**Lithuanian Page:**
+1. Click "Apie mus" → URL changes to `/lt/#apie-mus`
+2. Console: `[ScrollToSection] Hash: #apie-mus -> Section ID: #about`
 3. Page scrolls to same About section
 
 ### Expected Behavior:
