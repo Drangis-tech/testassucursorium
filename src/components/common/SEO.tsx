@@ -16,7 +16,7 @@ export const SEO = ({ title, description, image, article }: SEOProps) => {
   const siteUrl = 'https://customsconsulting.eu';
   const defaultTitle = 'Customs Consulting - Muitinės Tarpininkas';
   const defaultDescription = 'UAB Customs Consulting - Patikimas muitinės tarpininkas. Profesionalios muitinės paslaugos Lietuvoje.';
-  const defaultImage = `${siteUrl}/logo.png`;
+  const defaultImage = `${siteUrl}/logo.svg`;
 
   const fullTitle = title ? `${title} | Customs Consulting` : defaultTitle;
   const metaDescription = description || defaultDescription;

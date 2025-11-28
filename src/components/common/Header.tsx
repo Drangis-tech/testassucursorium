@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
-import logo from '@/assets/logo.png';
+import logo from '@/assets/logo.svg';
 import StaggeredMenu, { type StaggeredMenuItem } from './StaggeredMenu';
 
 interface HeaderProps {
