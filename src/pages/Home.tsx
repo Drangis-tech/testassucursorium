@@ -884,11 +884,9 @@ const Home = () => {
                           {t('Darbo laikas', 'Working Hours', 'Godziny pracy', 'Рабочее время')}
                         </h4>
                         <p className="text-sm text-gray-400">
-                          {t('I–V: 8:00–17:00', 'Mon–Fri: 8:00–17:00', 'Pon–Pt: 8:00–17:00', 'Пн–Пт: 8:00–17:00')}
+                          {t('24/7', '24/7', '24/7', '24/7')}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {t('Skubūs atvejai – 24/7', 'Urgent cases – 24/7', 'Przypadki pilne – 24/7', 'Срочные случаи – 24/7')}
-                        </p>
+
                       </div>
                     </div>
                   </div>
